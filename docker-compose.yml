@@ -1,0 +1,12 @@
+version: '2'
+services:
+
+  portainer:
+    image: "example.com:5000/portainer:latest"
+    command: "--templates http://portainer-api:8100/ -d /data"
+    environment:
+     - SERVICE_NAME=admin
+     - SERVICE_TAGS=app
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./.data:/data
