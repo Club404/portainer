@@ -8,112 +8,160 @@
   <rd-header-content>Containers</rd-header-content>
 </rd-header>
 
-<div class="col-lg-12">
+<div class="col-lg-12 compact">
   <rd-widget>
-    <rd-widget-header icon="fa-server" title="Containers">
-      <div class="pull-right">
-        Items per page:
-        <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
-          <option value="0">All</option>
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
+    <rd-widget-header simple="true">
+      <div class="pull-left" role="group" aria-label="...">
+
+        <form class="form-inline col-lg-12 col-md-12 col-xs-12">
+          <div class="form-group" style="padding-right: 10px;">
+            <i class="fa fa-server"></i>
+            Containers
+          </div>
+          <div class="form-group">
+            <input id="filter"
+                   type="text"
+                   style="margin-top: -4px;"
+                   class="form-control input-sm"
+                   ng-model="state.filter"
+                   placeholder="Filter..."/>
+          </div>
+          <div class="form-group">
+            <input type="checkbox" ng-model="state.displayAll" id="displayAll" ng-change="toggleGetAll()"
+                   style="margin-top: -2px; margin-right: 5px;"/><label for="displayAll">Show all</label>
+          </div>
+        </form>
+      </div>
+      <div class="btn-group btn-group-xs pull-right" role="group" aria-label="...">
+        <button type="button" class="btn btn-default btn-responsive" ui-sref="actions.create.container">
+          <i style="margin-right: 0" class="fa fa-plus space-right" aria-hidden="true"></i>
+          <span class=" hidden-sm hidden-md space-left">Add Container</span>
+        </button>
+        <button type="button" class="btn btn-primary btn-responsive" ng-click="startAction()"
+                ng-disabled="!state.selectedItemCount">
+          <i style="margin-right: 0" class="fa fa-play space-right" aria-hidden="true"></i>
+          <span class=" hidden-sm hidden-md space-left">Start</span>
+        </button>
+        <button type="button" class="btn btn-primary btn-responsive" ng-click="stopAction()"
+                ng-disabled="!state.selectedItemCount">
+          <i style="margin-right: 0" class="fa fa-stop space-right" aria-hidden="true"></i>
+          <span class=" hidden-sm hidden-md space-left">Stop</span>
+        </button>
+        <button type="button" class="btn btn-primary btn-responsive" ng-click="killAction()"
+                ng-disabled="!state.selectedItemCount">
+          <i style="margin-right: 0" class="fa fa-bomb space-right" aria-hidden="true"></i>
+          <span class=" hidden-sm hidden-md space-left">Kill</span>
+        </button>
+        <button type="button" class="btn btn-primary btn-responsive" ng-click="restartAction()"
+                ng-disabled="!state.selectedItemCount">
+          <i style="margin-right: 0" class="fa fa-refresh space-right" aria-hidden="true"></i>
+          <span class=" hidden-sm hidden-md space-left">Restart</span>
+        </button>
+        <button type="button" class="btn btn-primary btn-responsive" ng-click="pauseAction()"
+                ng-disabled="!state.selectedItemCount">
+          <i style="margin-right: 0" class="fa fa-pause space-right" aria-hidden="true"></i>
+          <span class=" hidden-sm hidden-md space-left">Pause</span>
+        </button>
+        <button type="button" class="btn btn-primary btn-responsive" ng-click="unpauseAction()"
+                ng-disabled="!state.selectedItemCount">
+          <i style="margin-right: 0" class="fa fa-play space-right" aria-hidden="true"></i>
+          <span class=" hidden-sm hidden-md space-left">Resume</span>
+        </button>
+        <button type="button" class="btn btn-danger btn-responsive" ng-click="removeAction()"
+                ng-disabled="!state.selectedItemCount">
+          <i style="margin-right: 0" class="fa fa-trash space-right" aria-hidden="true"></i>
+          <span class=" hidden-sm hidden-md space-left">Remove</span>
+        </button>
       </div>
     </rd-widget-header>
-    <rd-widget-taskbar classes="col-lg-12">
-      <div class="pull-left">
-        <div class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-primary btn-responsive" ng-click="startAction()" ng-disabled="!state.selectedItemCount"><i class="fa fa-play space-right" aria-hidden="true"></i>Start</button>
-          <button type="button" class="btn btn-primary btn-responsive" ng-click="stopAction()" ng-disabled="!state.selectedItemCount"><i class="fa fa-stop space-right" aria-hidden="true"></i>Stop</button>
-          <button type="button" class="btn btn-primary btn-responsive" ng-click="killAction()" ng-disabled="!state.selectedItemCount"><i class="fa fa-bomb space-right" aria-hidden="true"></i>Kill</button>
-          <button type="button" class="btn btn-primary btn-responsive" ng-click="restartAction()" ng-disabled="!state.selectedItemCount"><i class="fa fa-refresh space-right" aria-hidden="true"></i>Restart</button>
-          <button type="button" class="btn btn-primary btn-responsive" ng-click="pauseAction()" ng-disabled="!state.selectedItemCount"><i class="fa fa-pause space-right" aria-hidden="true"></i>Pause</button>
-          <button type="button" class="btn btn-primary btn-responsive" ng-click="unpauseAction()" ng-disabled="!state.selectedItemCount"><i class="fa fa-play space-right" aria-hidden="true"></i>Resume</button>
-          <button type="button" class="btn btn-danger btn-responsive" ng-click="removeAction()" ng-disabled="!state.selectedItemCount"><i class="fa fa-trash space-right" aria-hidden="true"></i>Remove</button>
-        </div>
-        <a class="btn btn-default btn-responsive" type="button" ui-sref="actions.create.container">Add container</a>
-      </div>
-      <div class="pull-right">
-        <input type="checkbox" ng-model="state.displayAll" id="displayAll" ng-change="toggleGetAll()" style="margin-top: -2px; margin-right: 5px;"/><label for="displayAll">Show all containers</label>
-        <input type="text" id="filter" ng-model="state.filter" placeholder="Filter..." class="form-control input-sm" />
-      </div>
-    </rd-widget-taskbar>
     <rd-widget-body classes="no-padding">
       <div class="table-responsive">
         <table class="table table-hover">
           <thead>
-            <tr>
-              <th>
-                <input type="checkbox" ng-model="allSelected" ng-change="selectItems(allSelected)" />
-              </th>
-              <th>
-                <a ui-sref="containers" ng-click="order('Status')">
-                  State
-                  <span ng-show="sortType == 'Status' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                  <span ng-show="sortType == 'Status' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                </a>
-              </th>
-              <th>
-                <a ui-sref="containers" ng-click="order('Names')">
-                  Name
-                  <span ng-show="sortType == 'Names' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                  <span ng-show="sortType == 'Names' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                </a>
-              </th>
-              <th>
-                <a ui-sref="containers" ng-click="order('Image')">
-                  Image
-                  <span ng-show="sortType == 'Image' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                  <span ng-show="sortType == 'Image' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                </a>
-              </th>
-              <th ng-if="state.displayIP">
-                <a ui-sref="containers" ng-click="order('IP')">
-                  IP Address
-                  <span ng-show="sortType == 'IP' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                  <span ng-show="sortType == 'IP' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                </a>
-              </th>
-              <th ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM'">
-                <a ui-sref="containers" ng-click="order('Host')">
-                  Host IP
-                  <span ng-show="sortType == 'Host' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                  <span ng-show="sortType == 'Host' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                </a>
-              </th>
-              <th>
-                <a ui-sref="containers" ng-click="order('Ports')">
-                  Published Ports
-                  <span ng-show="sortType == 'Ports' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                  <span ng-show="sortType == 'Ports' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                </a>
-              </th>
-            </tr>
+          <tr>
+            <th style="width: 20px;">
+              <input type="checkbox" ng-model="allSelected" ng-change="selectItems(allSelected)"/>
+            </th>
+            <th style="width: 100px;">
+              <a ui-sref="containers" ng-click="order('Status')">
+                State
+                <span ng-show="sortType == 'Status' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                <span ng-show="sortType == 'Status' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+              </a>
+            </th>
+            <th>
+              <a ui-sref="containers" ng-click="order('Names')">
+                Name
+                <span ng-show="sortType == 'Names' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                <span ng-show="sortType == 'Names' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+              </a>
+            </th>
+            <th class="hidden-sm-down">
+              <a ui-sref="containers" ng-click="order('Image')">
+                Image
+                <span ng-show="sortType == 'Image' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                <span ng-show="sortType == 'Image' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+              </a>
+            </th>
+            <th style="width: 100px;" ng-if="state.displayIP">
+              <a ui-sref="containers" ng-click="order('IP')">
+                IP Address
+                <span ng-show="sortType == 'IP' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                <span ng-show="sortType == 'IP' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+              </a>
+            </th>
+            <th style="width: 100px;" ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM'">
+              <a ui-sref="containers" ng-click="order('Host')">
+                Host IP
+                <span ng-show="sortType == 'Host' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                <span ng-show="sortType == 'Host' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+              </a>
+            </th>
+            <th style="width: 300px;">
+              <a ui-sref="containers" ng-click="order('Ports')">
+                Published Ports
+                <span ng-show="sortType == 'Ports' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                <span ng-show="sortType == 'Ports' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+              </a>
+              <span class="pull-right">
+                Show
+                <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
+                  <option value="0">All</option>
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </span>
+            </th>
+          </tr>
           </thead>
           <tbody>
-            <tr dir-paginate="container in (state.filteredContainers = ( containers | filter:state.filter | orderBy:sortType:sortReverse | itemsPerPage: state.pagination_count))">
-              <td><input type="checkbox" ng-model="container.Checked" ng-change="selectItem(container)"/></td>
-              <td><span class="label label-{{ container.Status|containerstatusbadge }}">{{ container.Status }}</span></td>
-              <td ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM'"><a ui-sref="container({id: container.Id})">{{ container|swarmcontainername}}</a></td>
-              <td ng-if="applicationState.endpoint.mode.provider !== 'DOCKER_SWARM'"><a ui-sref="container({id: container.Id})">{{ container|containername}}</a></td>
-              <td><a ui-sref="image({id: container.Image})">{{ container.Image }}</a></td>
-              <td ng-if="state.displayIP">{{ container.IP ? container.IP : '-' }}</td>
-              <td ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM'">{{ container.hostIP }}</td>
-              <td>
-                <a ng-if="container.Ports.length > 0" ng-repeat="p in container.Ports" class="image-tag" ng-href="http://{{p.host}}:{{p.public}}" target="_blank">
-                  <i class="fa fa-external-link" aria-hidden="true"></i> {{p.public}}:{{ p.private }}
-                </a>
-                <span ng-if="container.Ports.length == 0" >-</span>
-              </td>
-            </tr>
-            <tr ng-if="!containers">
-              <td colspan="8" class="text-center text-muted">Loading...</td>
-            </tr>
-            <tr ng-if="containers.length == 0">
-              <td colspan="8" class="text-center text-muted">No containers available.</td>
-            </tr>
+          <tr
+            dir-paginate="container in (state.filteredContainers = ( containers | filter:state.filter | orderBy:sortType:sortReverse | itemsPerPage: state.pagination_count))">
+            <td><input type="checkbox" ng-model="container.Checked" ng-change="selectItem(container)"/></td>
+            <td><span class="label label-{{ container.Status|containerstatusbadge }}">{{ container.Status }}</span></td>
+            <td ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM'"><a
+              ui-sref="container({id: container.Id})">{{ container|swarmcontainername}}</a></td>
+            <td ng-if="applicationState.endpoint.mode.provider !== 'DOCKER_SWARM'"><a
+              ui-sref="container({id: container.Id})">{{ container|containername}}</a></td>
+            <td class="hidden-sm-down"><a ui-sref="image({id: container.Image})">{{ container.Image }}</a></td>
+            <td ng-if="state.displayIP">{{ container.IP ? container.IP : '-' }}</td>
+            <td ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM'">{{ container.hostIP }}</td>
+            <td>
+              <a ng-if="container.Ports.length > 0" ng-repeat="p in container.Ports" class="image-tag"
+                 ng-href="http://{{p.host}}:{{p.public}}" target="_blank">
+                <i class="fa fa-external-link" aria-hidden="true"></i> {{p.public}}:{{ p.private }}
+              </a>
+              <span ng-if="container.Ports.length == 0">-</span>
+            </td>
+          </tr>
+          <tr ng-if="!containers">
+            <td colspan="8" class="text-center text-muted">Loading...</td>
+          </tr>
+          <tr ng-if="containers.length == 0">
+            <td colspan="8" class="text-center text-muted">No containers available.</td>
+          </tr>
           </tbody>
         </table>
         <div ng-if="containers" class="pull-left pagination-controls">
@@ -121,5 +169,5 @@
         </div>
       </div>
     </rd-widget-body>
-  <rd-widget>
+    <rd-widget>
 </div>

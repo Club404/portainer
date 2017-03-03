@@ -5,10 +5,11 @@ angular
     requires: '^rdWidget',
     scope: {
       title: '@',
-      icon: '@'
+      icon: '@',
+      simple: '@'
     },
     transclude: true,
-    template: '<div class="widget-header"><div class="row"><span class="pull-left"><i class="fa" ng-class="icon"></i> {{title}} </span><span class="pull-right col-xs-6 col-sm-4" ng-transclude></span></div></div>',
+    template: '<div class="widget-header"><div class="row"><span ng-if="!simple" class="pull-left col-xs-2 col-sm-3 col-md-4"><i class="fa" ng-class="icon"></i> {{title}} </span><span class="{{ simple ? \'row\' : \'pull-right col-xs-10 col-sm-9 col-md-8\' }}" ng-transclude></span></div></div>',
     restrict: 'E'
   };
   return directive;

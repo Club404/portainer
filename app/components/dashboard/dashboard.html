@@ -6,70 +6,95 @@
 </rd-header>
 
 <div class="row">
-  <div class="col-lg-12 col-md-12 col-xs-12" ng-if="applicationState.endpoint.mode.provider !== 'DOCKER_SWARM'">
+  <div class="col-lg-6 col-md-6 col-xs-6" ng-if="applicationState.endpoint.mode.provider !== 'DOCKER_SWARM'">
     <rd-widget>
-      <rd-widget-header icon="fa-tachometer" title="Node info"></rd-widget-header>
+      <rd-widget-header icon="fa-tachometer" title="Portainer info">
+        <div class="pull-right">
+          <a href="http://portainer.io/" target="_blank">
+            <i class="fa fa-external-link"></i> About
+          </a>
+        </div>
+      </rd-widget-header>
       <rd-widget-body classes="no-padding">
         <table class="table">
           <tbody>
-            <tr>
-              <td>Name</td>
-              <td>{{ infoData.Name }}</td>
-            </tr>
-            <tr>
-              <td>Docker version</td>
-              <td>{{ infoData.ServerVersion }}</td>
-            </tr>
-            <tr>
-              <td>CPU</td>
-              <td>{{ infoData.NCPU }}</td>
-            </tr>
-            <tr>
-              <td>Memory</td>
-              <td>{{ infoData.MemTotal|humansize }}</td>
-            </tr>
+          <tr>
+            <td>Name</td>
+            <td>{{ infoData.Name }}</td>
+          </tr>
+          <tr>
+            <td>Docker version</td>
+            <td>{{ infoData.ServerVersion }}</td>
+          </tr>
+          <tr>
+            <td>CPU</td>
+            <td>{{ infoData.NCPU }}</td>
+          </tr>
+          <tr>
+            <td>Memory</td>
+            <td>{{ infoData.MemTotal|humansize }}</td>
+          </tr>
           </tbody>
         </table>
       </rd-widget-body>
     </rd-widget>
   </div>
-  <div class="col-lg-12 col-md-12 col-xs-12" ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM'">
+  <div class="col-lg-6 col-md-6 col-xs-6" ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM'">
     <rd-widget>
-      <rd-widget-header icon="fa-tachometer" title="Cluster info"></rd-widget-header>
+      <rd-widget-header icon="fa-tachometer" title="Portainer info">
+        <div class="pull-right">
+          <a href="http://portainer.io/" target="_blank">
+            <i class="fa fa-external-link"></i> About
+          </a>
+        </div>
+      </rd-widget-header>
       <rd-widget-body classes="no-padding">
         <table class="table">
           <tbody>
-            <tr>
-              <td>Nodes</td>
-              <td>{{ infoData.SystemStatus[0][1] == 'primary' ? infoData.SystemStatus[3][1] : infoData.SystemStatus[4][1] }}</td>
-            </tr>
-            <tr>
-              <td>Swarm version</td>
-              <td>{{ infoData.ServerVersion|swarmversion }}</td>
-            </tr>
-            <tr>
-              <td>Total CPU</td>
-              <td>{{ infoData.NCPU }}</td>
-            </tr>
-            <tr>
-              <td>Total memory</td>
-              <td>{{ infoData.MemTotal|humansize: 2 }}</td>
-            </tr>
+          <tr>
+            <td>Nodes</td>
+            <td>{{ infoData.SystemStatus[0][1] == 'primary' ? infoData.SystemStatus[3][1] : infoData.SystemStatus[4][1]
+              }}
+            </td>
+          </tr>
+          <tr>
+            <td>Swarm version</td>
+            <td>{{ infoData.ServerVersion|swarmversion }}</td>
+          </tr>
+          <tr>
+            <td>Total CPU</td>
+            <td>{{ infoData.NCPU }}</td>
+          </tr>
+          <tr>
+            <td>Total memory</td>
+            <td>{{ infoData.MemTotal|humansize: 2 }}</td>
+          </tr>
           </tbody>
         </table>
       </rd-widget-body>
     </rd-widget>
   </div>
-  <div class="col-lg-12 col-md-12 col-xs-12" ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM_MODE'">
+  <div class="col-lg-6 col-md-6 col-xs-6">
     <rd-widget>
-      <rd-widget-header icon="fa-tachometer" title="Swarm info"></rd-widget-header>
+      <rd-widget-header icon="fa-tachometer" title="Swarm info">
+        <div class="pull-right">
+          <a href="http://portainer.readthedocs.io/en/stable/deployment.html#connect-to-a-swarm-cluster"
+             target="_blank">
+            <i class="fa fa-external-link"></i> About
+          </a>
+        </div>
+      </rd-widget-header>
       <rd-widget-body classes="no-padding">
-        <table class="table">
-          <tbody>
+        <div class="info-card no-info-big" ng-if="applicationState.endpoint.mode.provider !== 'DOCKER_SWARM_MODE'">
+          No swarm clusters detected
+        </div>
+        <div ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM_MODE'">
+          <table class="table">
+            <tbody>
             <tr>
               <td colspan="2"><span class="small text-muted">This node is part of a Swarm cluster</span></td>
             </tr>
-            <tr >
+            <tr>
               <td>Node role</td>
               <td>{{ infoData.Swarm.ControlAvailable ? 'Manager' : 'Worker' }}</td>
             </tr>
@@ -77,8 +102,10 @@
               <td>Nodes in the cluster</td>
               <td>{{ infoData.Swarm.Nodes }}</td>
             </tr>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
+
       </rd-widget-body>
     </rd-widget>
   </div>
