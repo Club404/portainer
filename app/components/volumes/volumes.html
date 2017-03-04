@@ -10,7 +10,7 @@
 
 <div class="col-lg-12 compact">
   <rd-widget>
-    <rd-widget-header icon="fa-cubes" title="Volumes">
+    <rd-widget-header icon="fa-cubes" simple="true">
       <div class="pull-left" role="group" aria-label="...">
         <form class="form-inline col-lg-12 col-md-12 col-xs-12">
           <div class="form-group"
@@ -37,16 +37,18 @@
                    class="form-control input-sm"/>
           </div>
           <div class="form-group">
+            <a class="btn btn-sm btn-default" type="button" ui-sref="actions.create.volume">
+              Add volume
+            </a>
+          </div>
+          <div class="form-group">
             <button type="button"
-                    class="btn btn-smbtn-danger"
+                    class="btn btn-sm btn-danger"
                     ng-click="removeAction()"
                     ng-disabled="!state.selectedItemCount">
               <i class="fa fa-trash space-right" aria-hidden="true"></i>
               Remove
             </button>
-            <a class="btn btn-sm btn-default" type="button" ui-sref="actions.create.volume">
-              Add volume
-            </a>
           </div>
         </form>
       </div>
