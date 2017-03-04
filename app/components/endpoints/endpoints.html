@@ -8,18 +8,57 @@
   <rd-header-content>Endpoint management</rd-header-content>
 </rd-header>
 
-<div class="row">
+<div class="row compact">
   <div class="col-lg-12 col-md-12 col-xs-12">
-    <rd-widget>
-      <rd-widget-header icon="fa-plus" title="Add a new endpoint">
+    <rd-widget ng-init="vm = { show_add: false }">
+      <rd-widget-header icon="fa-plug" simple="true">
+        <div class="pull-left" role="group" aria-label="...">
+          <form class="form-inline col-lg-12 col-md-12 col-xs-12">
+            <div class="form-group"
+                 style="padding-right: 10px;">
+              <i class="fa fa-plug"></i>
+              Endpoints
+            </div>
+          </form>
+        </div>
+        <div class="pull-right" role="group" aria-label="...">
+          <form class="form-inline col-lg-12 col-md-12 col-xs-12">
+            <div class="form-group">
+              Items per page:
+              <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
+                <option value="0">All</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <input type="text" id="filter" ng-model="state.filter" placeholder="Filter..."
+                     class="form-control input-sm"/>
+            </div>
+            <div class="form-group">
+              <button type="button" class="btn btn-sm btn-default" ng-click="vm.show_add = true">
+                <i class="fa fa-plus space-right" aria-hidden="true"></i>
+                Add new
+              </button>
+              <button type="button" class="btn btn-sm btn-danger" ng-click="removeAction()"
+                      ng-disabled="!state.selectedItemCount">
+                <i class="fa fa-trash space-right" aria-hidden="true"></i>
+                Remove
+              </button>
+            </div>
+          </form>
+        </div>
       </rd-widget-header>
-      <rd-widget-body>
+      <rd-widget-body ng-if="vm.show_add">
         <form class="form-horizontal">
           <!-- name-input -->
           <div class="form-group">
             <label for="container_name" class="col-sm-2 control-label text-left">Name</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="container_name" ng-model="formValues.Name" placeholder="e.g. docker-prod01">
+              <input type="text" class="form-control" id="container_name" ng-model="formValues.Name"
+                     placeholder="e.g. docker-prod01">
             </div>
           </div>
           <!-- !name-input -->
@@ -27,7 +66,8 @@
           <div class="form-group">
             <label for="endpoint_url" class="col-sm-2 control-label text-left">Endpoint URL</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" id="endpoint_url" ng-model="formValues.URL" placeholder="e.g. 10.0.0.10:2375 or mydocker.mydomain.com:2375">
+              <input type="text" class="form-control" id="endpoint_url" ng-model="formValues.URL"
+                     placeholder="e.g. 10.0.0.10:2375 or mydocker.mydomain.com:2375">
             </div>
           </div>
           <!-- !endpoint-url-input -->
@@ -84,7 +124,12 @@
           <!-- !tls-certs -->
           <div class="form-group">
             <div class="col-sm-12">
-              <button type="button" class="btn btn-primary btn-sm" ng-disabled="!formValues.Name || !formValues.URL || (formValues.TLS && (!formValues.TLSCACert || !formValues.TLSCert || !formValues.TLSKey))" ng-click="addEndpoint()">Add endpoint</button>
+              <button type="button"
+                      class="btn btn-primary btn-sm"
+                      ng-disabled="!formValues.Name || !formValues.URL || (formValues.TLS && (!formValues.TLSCACert || !formValues.TLSCert || !formValues.TLSKey))"
+                      ng-click="addEndpoint() && (vm.show_add = false)">
+                Add endpoint
+              </button>
               <i id="createEndpointSpinner" class="fa fa-cog fa-spin" style="margin-left: 5px; display: none;"></i>
               <span class="text-danger" ng-if="state.error" style="margin: 5px;">
                 <i class="fa fa-exclamation-circle" aria-hidden="true"></i> {{ state.error }}
@@ -93,84 +138,60 @@
           </div>
         </form>
       </rd-widget-body>
-    </rd-widget>
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-lg-12 col-md-12 col-xs-12">
-    <rd-widget>
-      <rd-widget-header icon="fa-plug" title="Endpoints">
-        <div class="pull-right">
-          Items per page:
-          <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
-            <option value="0">All</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-        </div>
-      </rd-widget-header>
-      <rd-widget-taskbar classes="col-lg-12">
-        <div class="pull-left">
-          <button type="button" class="btn btn-danger" ng-click="removeAction()" ng-disabled="!state.selectedItemCount"><i class="fa fa-trash space-right" aria-hidden="true"></i>Remove</button>
-        </div>
-        <div class="pull-right">
-          <input type="text" id="filter" ng-model="state.filter" placeholder="Filter..." class="form-control input-sm" />
-        </div>
-      </rd-widget-taskbar>
       <rd-widget-body classes="no-padding">
         <div class="table-responsive">
           <table class="table table-hover">
             <thead>
-              <tr>
-                <th></th>
-                <th>
-                  <a ui-sref="endpoints" ng-click="order('Name')">
-                    Name
-                    <span ng-show="sortType == 'Name' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                    <span ng-show="sortType == 'Name' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                  </a>
-                </th>
-                <th>
-                  <a ui-sref="endpoints" ng-click="order('URL')">
-                    URL
-                    <span ng-show="sortType == 'URL' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                    <span ng-show="sortType == 'URL' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                  </a>
-                </th>
-                <th>
-                  <a ui-sref="endpoints" ng-click="order('TLS')">
-                    TLS
-                    <span ng-show="sortType == 'TLS' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                    <span ng-show="sortType == 'TLS' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                  </a>
-                </th>
-                <th></th>
-              </tr>
+            <tr>
+              <th></th>
+              <th>
+                <a ui-sref="endpoints" ng-click="order('Name')">
+                  Name
+                  <span ng-show="sortType == 'Name' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                  <span ng-show="sortType == 'Name' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+                </a>
+              </th>
+              <th>
+                <a ui-sref="endpoints" ng-click="order('URL')">
+                  URL
+                  <span ng-show="sortType == 'URL' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                  <span ng-show="sortType == 'URL' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+                </a>
+              </th>
+              <th>
+                <a ui-sref="endpoints" ng-click="order('TLS')">
+                  TLS
+                  <span ng-show="sortType == 'TLS' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                  <span ng-show="sortType == 'TLS' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+                </a>
+              </th>
+              <th></th>
+            </tr>
             </thead>
             <tbody>
-              <tr dir-paginate="endpoint in (state.filteredEndpoints = (endpoints | filter:state.filter | orderBy:sortType:sortReverse | itemsPerPage: state.pagination_count))">
-                <td><input type="checkbox" ng-model="endpoint.Checked" ng-change="selectItem(endpoint)" /></td>
-                <td><i class="fa fa-star" aria-hidden="true" ng-if="endpoint.Id === activeEndpoint.Id"></i> {{ endpoint.Name }}</td>
-                <td>{{ endpoint.URL | stripprotocol }}</td>
-                <td><i class="fa fa-shield" aria-hidden="true" ng-if="endpoint.TLS"></i></td>
-                <td>
+            <tr
+              dir-paginate="endpoint in (state.filteredEndpoints = (endpoints | filter:state.filter | orderBy:sortType:sortReverse | itemsPerPage: state.pagination_count))">
+              <td><input type="checkbox" ng-model="endpoint.Checked" ng-change="selectItem(endpoint)"/></td>
+              <td><i class="fa fa-star" aria-hidden="true" ng-if="endpoint.Id === activeEndpoint.Id"></i> {{
+                endpoint.Name }}
+              </td>
+              <td>{{ endpoint.URL | stripprotocol }}</td>
+              <td><i class="fa fa-shield" aria-hidden="true" ng-if="endpoint.TLS"></i></td>
+              <td>
                   <span ng-if="endpoint.Id !== activeEndpoint.Id">
                     <a ui-sref="endpoint({id: endpoint.Id})"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</a>
                   </span>
-                  <span class="small text-muted" ng-if="endpoint.Id === activeEndpoint.Id">
+                <span class="small text-muted" ng-if="endpoint.Id === activeEndpoint.Id">
                     <i class="fa fa-lock" aria-hidden="true"></i> You cannot edit the active endpoint
                   </span>
               </td>
-              </tr>
-              <tr ng-if="!endpoints">
-                <td colspan="5" class="text-center text-muted">Loading...</td>
-              </tr>
-              <tr ng-if="endpoints.length == 0">
-                <td colspan="5" class="text-center text-muted">No endpoints available.</td>
-              </tr>
+            </tr>
+            <tr ng-if="!endpoints">
+              <td colspan="5" class="text-center text-muted">Loading...</td>
+            </tr>
+            <tr ng-if="endpoints.length == 0">
+              <td colspan="5" class="text-center text-muted">No endpoints available.</td>
+            </tr>
             </tbody>
           </table>
           <div ng-if="endpoints" class="pull-left pagination-controls">
@@ -178,6 +199,6 @@
           </div>
         </div>
       </rd-widget-body>
-    <rd-widget>
+      <rd-widget>
   </div>
 </div>
