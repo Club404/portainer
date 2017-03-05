@@ -29,30 +29,89 @@
         <div class="pull-left" role="group" aria-label="...">
           <form class="form-inline col-lg-12 col-md-12 col-xs-12">
             <div class="form-group"
-                 style="padding-right: 10px;">
+                 style="padding-right: 0px;">
               <img class="custom-header-ico" ng-src="{{ state.selectedTemplate.Logo }}"></img>
-              Create instance
             </div>
             <div class="form-group">
-              <input type="text"
-                     name="container_name"
-                     style="width: 250px"
-                     class="form-control input-sm"
-                     ng-model="formValues.name"
-                     placeholder="Name, e.g. web (optional)">
+              <div class="input-group">
+                <span class="input-group-addon">
+                  {{ state.selectedTemplate.Image }}
+                </span>
+
+                <div class="input-group-addon">
+                  <div class="dropdown">
+                    <span href=""
+                          style="cursor: pointer;"
+                          class="dropdown-toggle"
+                          data-toggle="dropdown">
+                      <i class="fa fa-cube"></i> new
+                      <span class="caret"></span>
+                    </span>
+                    <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
+                      <li>
+                        <a href=""><i class="fa fa-cube"></i> Container</a>
+                      </li>
+                      <li class="divider"></li>
+                      <li>
+                        <a href=""><i class="fa fa-globe"></i> Web Proxy</a>
+                      </li>
+                      <li>
+                        <a href=""><i class="fa fa-gears"></i> REST API</a>
+                      </li>
+                      <li>
+                        <a href=""><i class="fa fa-database"></i> Data Store</a>
+                      </li>
+                      <li class="divider"></li>
+                      <li>
+                        <a href="" ng-disabled="true"><i class="fa fa-cubes"></i> Multi Node</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <input type="text"
+                       name="container_name"
+                       style="width: 250px"
+                       class="form-control input-sm"
+                       ng-model="formValues.name"
+                       placeholder="Name, e.g. web (optional)">
+
+                <div class="input-group-addon">
+                  <div class="dropdown">
+                    <span href=""
+                          style="cursor: pointer;"
+                          class="dropdown-toggle"
+                          data-toggle="dropdown">
+                      <i class="fa fa-sitemap"></i> {{ formValues.network ? formValues.network.Name : 'Network' }}
+                      <span class="caret"></span>
+                    </span>
+                    <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
+                      <li ng-if="availableNetworks.length"
+                          class="disabled"
+                          ng-disabled="true">
+                        <a ng-disabled="true"><i class="fa fa-question"></i> No networks</a>
+                      </li>
+                      <li ng-repeat="net in availableNetworks">
+                        <a ng-click="formValues.network = net"><i class="fa fa-sitemap"></i> {{ net.Name }}</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <button type="button"
+                      class="btn btn-primary btn-sm"
+                      ng-disabled="!formValues.network"
+                      ng-click="createTemplate()">
+                Create
+              </button>
+              <i id="createContainerSpinner" class="fa fa-cog fa-spin" style="margin-left: 5px; display: none;"></i>
             </div>
           </form>
         </div>
         <div class="pull-right" role="group" aria-label="...">
           <form class="form-inline col-lg-12 col-md-12 col-xs-12">
-            <div class="form-group">
-              Network:
-              <select class="form-control input input-sm"
-                      ng-options="net.Name for net in availableNetworks"
-                      ng-model="formValues.network">
-                <option disabled hidden value="">Select a network</option>
-              </select>
-            </div>
             <div class="form-group">
               <div class="btn-group btn-group-sm">
                 <a class="btn btn-sm btn-default"
@@ -80,15 +139,6 @@
                   Less options
                 </a>
               </div>
-            </div>
-            <div class="form-group">
-              <button type="button"
-                      class="btn btn-primary btn-sm"
-                      ng-disabled="!formValues.network"
-                      ng-click="createTemplate()">
-                Create
-              </button>
-              <i id="createContainerSpinner" class="fa fa-cog fa-spin" style="margin-left: 5px; display: none;"></i>
             </div>
           </form>
         </div>
@@ -128,6 +178,13 @@
               External port mappings
             </label>
             <div class="col-sm-10 form-inline">
+              <div style="margin-top: 2px;"
+                   ng-if="!state.selectedTemplate.Ports.length">
+                <em>
+                  No port mappings defined yet.
+                  <a ng-click="addPortBinding()">Add new port.</a>
+                </em>
+              </div>
               <div style="margin-top: 2px;"
                    ng-repeat="portBinding in state.selectedTemplate.Ports">
 
@@ -190,7 +247,8 @@
                 <span ng-switch="volume.type">
                   <div ng-switch-default class="input-group input-group-sm col-sm-4">
                     <span class="input-group-addon" style="width: 100px;">auto</span>
-                    <input type="text" class="form-control" ng-model="volume.name" placeholder="Auto assign on host file system" readonly>
+                    <input type="text" class="form-control" ng-model="volume.name"
+                           placeholder="Auto assign on host file system" readonly>
                   </div>
                   <div ng-switch-when="bind" class="input-group input-group-sm col-sm-4">
                     <span class="input-group-addon" style="width: 100px;">host</span>
