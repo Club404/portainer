@@ -34,47 +34,85 @@
             </div>
             <div class="form-group">
               <div class="input-group">
-                <span class="input-group-addon">
-                  {{ state.selectedTemplate.Image }}
-                </span>
 
                 <div class="input-group-addon">
                   <div class="dropdown">
-                    <span href=""
-                          style="cursor: pointer;"
+                    <span style="cursor: pointer;"
                           class="dropdown-toggle"
                           data-toggle="dropdown">
-                      <i class="fa fa-cube"></i> new
+                      <i
+                        class="{{ formValues.bindings.length > 1 ? 'fa fa-cubes' : (formValues.bindings.length < 1 ? 'fa fa-cube' : formValues.bindings[0].icon) }}"></i>
                       <span class="caret"></span>
                     </span>
                     <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
                       <li>
-                        <a href=""><i class="fa fa-cube"></i> Container</a>
+                        <a ng-click="clearPortBindings()"><i class="fa fa-cube"></i> Container</a>
+                      </li>
+                      <li class="divider"></li>
+                      <li ng-repeat="binding in bindTypes" ng-class="{ 'disabled': formValues.bindings.length > 1 }">
+                        <a ng-click="setPortBinding(binding, null)">
+                          <i class="{{ binding.icon }}"></i> {{ binding.label }}
+                        </a>
                       </li>
                       <li class="divider"></li>
                       <li>
-                        <a href=""><i class="fa fa-globe"></i> Web Proxy</a>
-                      </li>
-                      <li>
-                        <a href=""><i class="fa fa-gears"></i> REST API</a>
-                      </li>
-                      <li>
-                        <a href=""><i class="fa fa-database"></i> Data Store</a>
-                      </li>
-                      <li class="divider"></li>
-                      <li>
-                        <a href="" ng-disabled="true"><i class="fa fa-cubes"></i> Multi Node</a>
+                        <a ng-click="state.showAdvancedOptions = true;">
+                          <i class="fa fa-cubes"></i> Custom
+                        </a>
                       </li>
                     </ul>
                   </div>
                 </div>
 
-                <input type="text"
-                       name="container_name"
-                       style="width: 250px"
-                       class="form-control input-sm"
-                       ng-model="formValues.name"
-                       placeholder="Name, e.g. web (optional)">
+                <div class="input-group-addon" ng-if="formValues.bindings.length === 1">
+                  {{ formValues.bindings[0].type !== 'app' ? '/' + formValues.bindings[0].type + '/' : '/' }}
+                </div>
+                <div class="input-group-addon" ng-if="formValues.bindings.length > 1">
+                  <span style="cursor: pointer;"
+                        ng-click="state.showAdvancedOptions = true;">
+                    <i class="fa fa-wrench"></i>
+                  </span>
+                </div>
+
+                <span ng-switch="formValues.bindings.length"
+                      uib-tooltip="{{ state.selectedTemplate.Image }}"
+                      tooltip-placement="top">
+                  <input ng-switch-when="0"
+                         type="text"
+                         name="container_name"
+                         style="width: 250px"
+                         class="form-control input-sm"
+                         ng-model="formValues.name"
+                         placeholder="e.g. {{ state.imageParts.name || 'portal' }} (optional)">
+                  <input ng-switch-when="1"
+                         name="bind_opts"
+                         style="width: 250px"
+                         class="form-control input-sm"
+                         ng-model="formValues.bindings[0].name"
+                         placeholder="{{ state.imageParts.name || 'your-app-name' }}">
+                  <input ng-switch-default=""
+                         style="width: 250px"
+                         class="form-control input-sm"
+                         ng-model="formValues.name"
+                         placeholder="{{ state.imageParts.name || 'e.g. my-container (optional)' }}">
+                </span>
+
+                <span class="input-group-addon">
+                  <div class="dropdown">
+                    <span style="cursor: pointer;"
+                          class="dropdown-toggle"
+                          data-toggle="dropdown">
+                      <i class="fa fa-tag"></i>
+                      <span>{{ state.imageParts.tags || 'latest' }}</span>
+                      <span class="caret"></span>
+                    </span>
+                    <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
+                      <li class="disabled">
+                        <a><i class="fa fa-cube"></i> Browse...</a>
+                      </li>
+                    </ul>
+                  </div>
+                </span>
 
                 <div class="input-group-addon">
                   <div class="dropdown">
@@ -190,14 +228,52 @@
 
                 <!-- host-port -->
                 <div class="input-group col-sm-4 input-group-sm">
-                  <span class="input-group-addon" style="width: 100px;">port</span>
+                  <div style="width: 50px"
+                       class="input-group-addon">
+                    <div class="dropdown">
+                    <span style="cursor: pointer;"
+                          class="dropdown-toggle"
+                          ng-class="{ 'disabled' : !portBinding.containerPort }"
+                          data-toggle="dropdown">
+                      <i class="{{ !portBinding.binding ? 'fa fa-sitemap' : portBinding.binding.icon }}"></i>
+                      <span class="caret"></span>
+                    </span>
+                      <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
+                        <li>
+                          <a ng-click="setPortBinding(null, portBinding.containerPort)"><i class="fa fa-sitemap"></i>
+                            Auto assign</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li ng-repeat="binding in bindTypes">
+                          <a ng-click="setPortBinding(binding, portBinding.containerPort)">
+                            <i class="{{ binding.icon }}"></i> {{ binding.label }}
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div style="padding: 0"
+                       class="input-group-addon"
+                       ng-if="portBinding.binding">
+                    {{ portBinding.binding.type !== 'app' ? '/' + portBinding.binding.type + '/' : '/' }}
+                  </div>
                   <input type="text"
                          class="form-control"
+                         ng-if="!portBinding.binding"
+                         ng-disabled="!portBinding.containerPort"
                          ng-class="{ 'alert alert-info no-padding' : portBinding.hostPort }"
                          ng-focus="portBinding.active = true"
                          ng-blur="portBinding.active = false"
                          ng-model="portBinding.hostPort"
                          placeholder="{{ portBinding.active ? 'e.g. 80 or 1.2.3.4:80' : 'Auto assign port number'}}">
+                  <input type="text"
+                         class="form-control"
+                         ng-if="portBinding.binding"
+                         ng-disabled="!portBinding.containerPort"
+                         ng-class="{ 'alert alert-info no-padding' : portBinding.binding.name }"
+                         ng-model="portBinding.binding.name"
+                         placeholder="{{ state.imageParts.name }}">
+
                 </div>
                 <!-- !host-port -->
                 <span style="margin: 0 10px 0 10px;">
@@ -205,7 +281,11 @@
                     </span>
                 <!-- container-port -->
                 <div class="input-group col-sm-4 input-group-sm">
-                  <span class="input-group-addon">container</span>
+                  <span style="width: 100px"
+                        class="input-group-addon"
+                        ng-class="{ 'has-error' : !portBinding.containerPort }">
+                    container
+                  </span>
                   <input type="text" class="form-control" ng-model="portBinding.containerPort"
                          placeholder="e.g. 80">
                 </div>
@@ -246,12 +326,20 @@
 
                 <span ng-switch="volume.type">
                   <div ng-switch-default class="input-group input-group-sm col-sm-4">
-                    <span class="input-group-addon" style="width: 100px;">auto</span>
+                    <span style="width: 34px"
+                          class="input-group-addon">
+                      <i class="fa fa-hdd-o"></i>
+                    </span>
+                    <span class="input-group-addon" style="width: 66px;">auto</span>
                     <input type="text" class="form-control" ng-model="volume.name"
                            placeholder="Auto assign on host file system" readonly>
                   </div>
                   <div ng-switch-when="bind" class="input-group input-group-sm col-sm-4">
-                    <span class="input-group-addon" style="width: 100px;">host</span>
+                    <span style="width: 34px"
+                          class="input-group-addon">
+                      <i class="fa fa-hdd-o"></i>
+                    </span>
+                    <span class="input-group-addon" style="width: 66px;">host</span>
                     <input type="text" class="form-control" ng-model="volume.name" placeholder="e.g. /path/on/host">
                     <label style="width: 24px;"
                            class="btn btn-sm input-group-addon"
@@ -269,7 +357,11 @@
                       </label>
                   </div>
                   <div ng-switch-when="volume" class="input-group input-group-sm col-sm-4">
-                    <span class="input-group-addon" style="width: 100px;">volume</span>
+                    <span style="width: 34px"
+                          class="input-group-addon">
+                      <i class="fa fa-hdd-o"></i>
+                    </span>
+                    <span class="input-group-addon" style="width: 66px;">volume</span>
                     <select class="form-control" ng-model="volume.name">
                       <option selected disabled hidden value="">Select a volume</option>
                       <option ng-repeat="vol in availableVolumes" ng-value="vol.Name">{{ vol.Name|truncate:30}}
@@ -297,7 +389,10 @@
                 </span>
 
                 <div class="input-group col-sm-4 input-group-sm">
-                  <span class="input-group-addon">container</span>
+                  <span class="input-group-addon"
+                        style="width: 100px">
+                    container
+                  </span>
                   <input type="text"
                          class="form-control"
                          ng-model="volume.containerPath"
