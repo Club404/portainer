@@ -198,13 +198,39 @@
               External port mappings
             </label>
             <div class="col-sm-10 form-inline">
+
               <div style="margin-top: 2px;"
+                   class="input-group col-sm-4 input-group-sm"
                    ng-if="!state.selectedTemplate.Ports.length">
-                <em>
-                  No port mappings defined yet.
-                  <a ng-click="addPortBinding()">Add new port.</a>
-                </em>
+
+                <div style="width: 50px" class="input-group-addon">
+                  <div class="dropdown disabled">
+                    <span class="dropdown-toggle" data-toggle="dropdown">
+                      <i class="fa fa-sitemap"></i>
+                      <span class="caret"></span>
+                    </span>
+                  </div>
+                </div>
+
+                <input type="text"
+                       class="form-control"
+                       placeholder="No port mappings defined yet."
+                       readonly>
+
+                <div style="width: 34px" class="input-group-addon">
+                  <div class="dropdown disabled">
+                    <span class="dropdown-toggle"
+                          ng-click="addPortBinding()"
+                          data-toggle="dropdown">
+                      <i class="fa fa-plus-circle"></i>
+                      Add
+                    </span>
+                  </div>
+                </div>
+
               </div>
+
+
               <div style="margin-top: 2px;"
                    ng-repeat="portBinding in state.selectedTemplate.Ports">
 
