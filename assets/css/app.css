@@ -3,6 +3,33 @@ html, body, #content-wrapper, .page-content, #view {
   width: 100%;
 }
 
+#sidebar-wrapper {
+  background: #2e3c42;
+}
+
+ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a:hover, ul.sidebar .sidebar-main a {
+  background: #37474f;
+}
+
+.no-info-big {
+  color: silver;
+  font-size: 18px;
+  text-align: center;
+  margin: 64px auto;
+}
+
+.compact .table {
+  margin-bottom: 3px !important;
+}
+
+.compact .row > div {
+  margin-bottom: 3px !important;
+}
+
+.compact .widget-header {
+  line-height: 24px;
+}
+
 .white-space-normal {
   white-space: normal !important;
 }
@@ -35,13 +62,13 @@ html, body, #content-wrapper, .page-content, #view {
 
 .containerNameInput {
   width: 85%;
-  border:none;
-  background:none;
+  border: none;
+  background: none;
   border-bottom: 1px solid black;
 }
 
 .containerNameInput:active, .containerNameInput:focus {
-  outline:none;
+  outline: none;
 }
 
 #network-legend {
@@ -57,9 +84,9 @@ html, body, #content-wrapper, .page-content, #view {
   margin-left: 5px;
 }
 
-.form-horizontal .control-label.text-left{
-    text-align: left;
-    font-size: 0.9em;
+.form-horizontal .control-label.text-left {
+  text-align: left;
+  font-size: 0.9em;
 }
 
 input[type="checkbox"] {
@@ -72,7 +99,7 @@ input[type="radio"] {
   vertical-align: middle;
 }
 
-a[ng-click]{
+a[ng-click] {
   cursor: pointer;
 }
 
@@ -154,6 +181,7 @@ a[ng-click]{
   position: relative;
   overflow: hidden;
 }
+
 .hvr-underline-from-center:before {
   content: "";
   position: absolute;
@@ -170,6 +198,7 @@ a[ng-click]{
   -webkit-transition-timing-function: ease-out;
   transition-timing-function: ease-out;
 }
+
 .hvr-underline-from-center:hover:before, .hvr-underline-from-center:focus:before, .hvr-underline-from-center:active:before {
   left: 0;
   right: 0;
@@ -188,17 +217,17 @@ a[ng-click]{
   border-radius: 10px;
   cursor: pointer;
   border: 2px solid #f6f6f6;
-  color: #30426a;
+  color: #37474f;
 }
 
 .container-template--selected {
   background-color: #ececec;
-  color: #2d3e63;
+  color: #40525c;
 }
 
 .container-template:hover {
   background-color: #ececec;
-  color: #2d3e63;
+  color: #37474f;
 }
 
 .container-template .logo {
@@ -270,5 +299,5 @@ ul.sidebar .sidebar-list a.active {
   color: #fff;
   text-indent: 22px;
   border-left: 3px solid #fff;
-  background: #2d3e63;
+  background: #40525c;
 }

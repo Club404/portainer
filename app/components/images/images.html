@@ -9,129 +9,168 @@
 </rd-header>
 
 <div class="row">
-  <div class="col-lg-12 col-md-12 col-xs-12">
-    <rd-widget>
-      <rd-widget-header icon="fa-download" title="Pull image ">
-      </rd-widget-header>
-      <rd-widget-body>
-        <form class="form-horizontal">
-          <!-- name-and-registry-inputs -->
-          <div class="form-group">
-            <label for="image_name" class="col-sm-1 control-label text-left">Name</label>
-            <div class="col-sm-7">
-              <input type="text" class="form-control" ng-model="config.Image" id="image_name" placeholder="e.g. ubuntu:trusty">
-            </div>
-            <label for="image_registry" class="col-sm-1 control-label text-left">Registry</label>
-            <div class="col-sm-3">
-              <input type="text" class="form-control" ng-model="config.Registry" id="image_registry" placeholder="leave empty to use DockerHub">
-            </div>
-          </div>
-          <!-- !name-and-registry-inputs -->
-          <!-- tag-note -->
-          <div class="form-group">
-            <div class="col-sm-12">
-              <span class="small text-muted">Note: if you don't specify the tag in the image name, <span class="label label-default">latest</span> will be used.</span>
-            </div>
-          </div>
-          <!-- !tag-note -->
-          <div class="form-group">
-            <div class="col-sm-12">
-              <button type="button" class="btn btn-default btn-sm" ng-disabled="!config.Image" ng-click="pullImage()">Pull</button>
-              <i id="pullImageSpinner" class="fa fa-cog fa-spin" style="margin-left: 5px; display: none;"></i>
-            </div>
-          </div>
-        </form>
-      </rd-widget-body>
-    </rd-widget>
-  </div>
-</div>
+  <div class="col-lg-12 col-md-12 col-xs-12 compact">
+    <rd-widget ng-init="vm = { expanded: false}">
+      <rd-widget-header icon="fa-download" simple="true">
+        <div class="pull-left" role="group" aria-label="...">
 
-<div class="row">
-  <div class="col-lg-12 col-md-12 col-xs-12">
-    <rd-widget>
-      <rd-widget-header icon="fa-clone" title="Images">
-        <div class="pull-right">
-          Items per page:
-          <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
-            <option value="0">All</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
+          <form class="form-inline col-lg-12 col-md-12 col-xs-12">
+            <div class="form-group"
+                 style="padding-right: 10px;"
+                 ng-click="vm.expanded = !vm.expanded;">
+              <i class="fa fa-download"></i>
+              Pull image
+            </div>
+
+            <!-- name-and-registry-inputs -->
+            <div class="form-group">
+              <input type="text" class="form-control input-sm" ng-model="config.Image" id="image_name"
+                     ng-focus="vm.expanded = true"
+                     ng-blur="vm.expanded = false"
+                     placeholder="e.g. ubuntu:trusty">
+            </div>
+            <div class="form-group">
+              <input type="text"
+                     style="width: 225px;"
+                     class="form-control input-sm"
+                     ng-focus="vm.expanded = true"
+                     ng-blur="vm.expanded = false"
+                     ng-model="config.Registry"
+                     id="image_registry"
+                     placeholder="<target-registry>:5000 (optional)">
+            </div>
+            <div class="form-group">
+              <button type="button" class="btn btn-default btn-sm" ng-disabled="!config.Image"
+                      ng-click="pullImage()">Pull
+              </button>
+              <i id="pullImageSpinner" class="fa fa-cog fa-spin"
+                 style="margin-left: 5px; display: none;"></i>
+            </div>
+            <!-- !name-and-registry-inputs -->
+          </form>
+        </div>
+        <div class="pull-right" role="group" aria-label="...">
+
+          <form class="form-inline col-lg-12 col-md-12 col-xs-12">
+            <div class="form-group"
+                 style="padding-right: 10px;">
+              Items per page
+              <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
+                <option value="0">All</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+
+            <!-- name-and-registry-inputs -->
+            <div class="form-group">
+              <input type="text"
+                     id="filter"
+                     ng-model="state.filter"
+                     placeholder="Filter..."
+                     class="form-control input-sm"/>
+            </div>
+            <div class="form-group">
+              <div class="btn-group btn-group-sm">
+                <button type="button"
+                        class="btn btn-danger"
+                        ng-click="removeAction()"
+                        ng-disabled="!state.selectedItemCount">
+                  <i class="fa fa-trash space-right" aria-hidden="true"></i>
+                  Remove
+                </button>
+                <button type="button"
+                        class="btn btn-danger dropdown-toggle"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        ng-disabled="!state.selectedItemCount">
+                  <span class="caret"></span>
+                  <span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <ul class="dropdown-menu">
+                  <li><a ng-click="confirmRemovalAction(true)" ng-disabled="!state.selectedItemCount">Force
+                    Remove</a></li>
+                </ul>
+              </div>
+            </div>
+            <!-- !name-and-registry-inputs -->
+          </form>
         </div>
       </rd-widget-header>
-      <rd-widget-taskbar classes="col-lg-12">
-        <div class="pull-left">
-          <div class="btn-group">
-            <button type="button" class="btn btn-danger" ng-click="removeAction()" ng-disabled="!state.selectedItemCount"><i class="fa fa-trash space-right" aria-hidden="true"></i>Remove</button>
-            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ng-disabled="!state.selectedItemCount" >
-              <span class="caret"></span>
-              <span class="sr-only">Toggle Dropdown</span>
-            </button>
-            <ul class="dropdown-menu">
-              <li><a ng-click="confirmRemovalAction(true)" ng-disabled="!state.selectedItemCount" >Force Remove</a></li>
-            </ul>
-          </div>
+
+      <rd-widget-body ng-if="vm.expanded" classes="no-padding">
+        <div class="alert alert-info" role="alert" style="margin: 0;">
+          <strong>Note:</strong> If you don't specify the tag in the image name,
+          <span class="label label-info">latest</span> will be used.
         </div>
-        <div class="pull-right">
-          <input type="text" id="filter" ng-model="state.filter" placeholder="Filter..." class="form-control input-sm" />
-        </div>
-      </rd-widget-taskbar>
+      </rd-widget-body>
+
       <rd-widget-body classes="no-padding">
         <div class="table-responsive">
           <table class="table table-hover">
             <thead>
-              <tr>
-                <th>
-                  <input type="checkbox" ng-model="allSelected" ng-change="selectItems(allSelected)" />
-                </th>
-                <th>
-                  <a ui-sref="images" ng-click="order('Id')">
-                    Id
-                    <span ng-show="sortType == 'Id' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                    <span ng-show="sortType == 'Id' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                  </a>
-                </th>
-                <th>
-                  <a ui-sref="images" ng-click="order('RepoTags')">
-                    Tags
-                    <span ng-show="sortType == 'RepoTags' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                    <span ng-show="sortType == 'RepoTags' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                  </a>
-                </th>
-                <th>
-                  <a ui-sref="images" ng-click="order('VirtualSize')">
-                    Size
-                    <span ng-show="sortType == 'VirtualSize' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                    <span ng-show="sortType == 'VirtualSize' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                  </a>
-                </th>
-                <th>
-                  <a ui-sref="images" ng-click="order('Created')">
-                    Created
-                    <span ng-show="sortType == 'Created' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                    <span ng-show="sortType == 'Created' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                  </a>
-                </th>
-              </tr>
+            <tr>
+              <th>
+                <input type="checkbox" ng-model="allSelected" ng-change="selectItems(allSelected)"/>
+              </th>
+              <th>
+                <a ui-sref="images" ng-click="order('Id')">
+                  Id
+                  <span ng-show="sortType == 'Id' && !sortReverse"
+                        class="glyphicon glyphicon-chevron-down"></span>
+                  <span ng-show="sortType == 'Id' && sortReverse"
+                        class="glyphicon glyphicon-chevron-up"></span>
+                </a>
+              </th>
+              <th>
+                <a ui-sref="images" ng-click="order('RepoTags')">
+                  Tags
+                  <span ng-show="sortType == 'RepoTags' && !sortReverse"
+                        class="glyphicon glyphicon-chevron-down"></span>
+                  <span ng-show="sortType == 'RepoTags' && sortReverse"
+                        class="glyphicon glyphicon-chevron-up"></span>
+                </a>
+              </th>
+              <th>
+                <a ui-sref="images" ng-click="order('VirtualSize')">
+                  Size
+                  <span ng-show="sortType == 'VirtualSize' && !sortReverse"
+                        class="glyphicon glyphicon-chevron-down"></span>
+                  <span ng-show="sortType == 'VirtualSize' && sortReverse"
+                        class="glyphicon glyphicon-chevron-up"></span>
+                </a>
+              </th>
+              <th>
+                <a ui-sref="images" ng-click="order('Created')">
+                  Created
+                  <span ng-show="sortType == 'Created' && !sortReverse"
+                        class="glyphicon glyphicon-chevron-down"></span>
+                  <span ng-show="sortType == 'Created' && sortReverse"
+                        class="glyphicon glyphicon-chevron-up"></span>
+                </a>
+              </th>
+            </tr>
             </thead>
             <tbody>
-              <tr dir-paginate="image in (state.filteredImages = (images | filter:state.filter | orderBy:sortType:sortReverse | itemsPerPage: state.pagination_count))">
-                <td><input type="checkbox" ng-model="image.Checked" ng-change="selectItem(image)" /></td>
-                <td><a ui-sref="image({id: image.Id})">{{ image.Id|truncate:20}}</a></td>
-                <td>
-                  <span class="label label-primary image-tag" ng-repeat="tag in (image|repotags)">{{ tag }}</span>
-                </td>
-                <td>{{ image.VirtualSize|humansize }}</td>
-                <td>{{ image.Created|getisodatefromtimestamp }}</td>
-              </tr>
-              <tr ng-if="!images">
-                <td colspan="5" class="text-center text-muted">Loading...</td>
-              </tr>
-              <tr ng-if="images.length == 0">
-                <td colspan="5" class="text-center text-muted">No images available.</td>
-              </tr>
+            <tr
+              dir-paginate="image in (state.filteredImages = (images | filter:state.filter | orderBy:sortType:sortReverse | itemsPerPage: state.pagination_count))">
+              <td><input type="checkbox" ng-model="image.Checked" ng-change="selectItem(image)"/></td>
+              <td><a ui-sref="image({id: image.Id})">{{ image.Id|truncate:20}}</a></td>
+              <td>
+                <span class="label label-primary image-tag" ng-repeat="tag in (image|repotags)">{{ tag }}</span>
+              </td>
+              <td>{{ image.VirtualSize|humansize }}</td>
+              <td>{{ image.Created|getisodatefromtimestamp }}</td>
+            </tr>
+            <tr ng-if="!images">
+              <td colspan="5" class="text-center text-muted">Loading...</td>
+            </tr>
+            <tr ng-if="images.length == 0">
+              <td colspan="5" class="text-center text-muted">No images available.</td>
+            </tr>
             </tbody>
           </table>
           <div ng-if="images" class="pull-left pagination-controls">
@@ -139,6 +178,6 @@
           </div>
         </div>
       </rd-widget-body>
-      <rd-widget>
-      </div>
-    </div>
+    </rd-widget>
+  </div>
+</div>

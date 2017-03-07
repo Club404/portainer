@@ -8,73 +8,97 @@
   <rd-header-content>Volumes</rd-header-content>
 </rd-header>
 
-<div class="col-lg-12">
+<div class="col-lg-12 compact">
   <rd-widget>
-    <rd-widget-header icon="fa-cubes" title="Volumes">
-      <div class="pull-right">
-        Items per page:
-        <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
-          <option value="0">All</option>
-          <option value="10">10</option>
-          <option value="25">25</option>
-          <option value="50">50</option>
-          <option value="100">100</option>
-        </select>
+    <rd-widget-header icon="fa-cubes" simple="true">
+      <div class="pull-left" role="group" aria-label="...">
+        <form class="form-inline col-lg-12 col-md-12 col-xs-12">
+          <div class="form-group"
+               style="padding-right: 10px;">
+            <i class="fa fa-cubes"></i>
+            Volumes
+          </div>
+        </form>
+      </div>
+      <div class="pull-right" role="group" aria-label="...">
+        <form class="form-inline col-lg-12 col-md-12 col-xs-12">
+          <div class="form-group">
+            Items per page:
+            <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
+              <option value="0">All</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input type="text" id="filter" ng-model="state.filter" placeholder="Filter..."
+                   class="form-control input-sm"/>
+          </div>
+          <div class="form-group">
+            <a class="btn btn-sm btn-default" type="button" ui-sref="actions.create.volume">
+              Add volume
+            </a>
+          </div>
+          <div class="form-group">
+            <button type="button"
+                    class="btn btn-sm btn-danger"
+                    ng-click="removeAction()"
+                    ng-disabled="!state.selectedItemCount">
+              <i class="fa fa-trash space-right" aria-hidden="true"></i>
+              Remove
+            </button>
+          </div>
+        </form>
       </div>
     </rd-widget-header>
-    <rd-widget-taskbar classes="col-lg-12">
-      <div class="pull-left">
-        <button type="button" class="btn btn-danger" ng-click="removeAction()" ng-disabled="!state.selectedItemCount"><i class="fa fa-trash space-right" aria-hidden="true"></i>Remove</button>
-        <a class="btn btn-default" type="button" ui-sref="actions.create.volume">Add volume</a>
-      </div>
-      <div class="pull-right">
-        <input type="text" id="filter" ng-model="state.filter" placeholder="Filter..." class="form-control input-sm" />
-      </div>
-    </rd-widget-taskbar>
     <rd-widget-body classes="no-padding">
       <div class="table-responsive">
         <table class="table table-hover">
           <thead>
-            <tr>
-              <th>
-                <input type="checkbox" ng-model="allSelected" ng-change="selectItems(allSelected)" />
-              </th>
-              <th>
-                <a ui-sref="volumes" ng-click="order('Name')">
-                  Name
-                  <span ng-show="sortType == 'Name' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                  <span ng-show="sortType == 'Name' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                </a>
-              </th>
-              <th>
-                <a ui-sref="volumes" ng-click="order('Driver')">
-                  Driver
-                  <span ng-show="sortType == 'Driver' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                  <span ng-show="sortType == 'Driver' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                </a>
-              </th>
-              <th>
-                <a ui-sref="volumes" ng-click="order('Mountpoint')">
-                  Mountpoint
-                  <span ng-show="sortType == 'Mountpoint' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
-                  <span ng-show="sortType == 'Mountpoint' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
-                </a>
-              </th>
-            </tr>
+          <tr>
+            <th>
+              <input type="checkbox" ng-model="allSelected" ng-change="selectItems(allSelected)"/>
+            </th>
+            <th>
+              <a ui-sref="volumes" ng-click="order('Name')">
+                Name
+                <span ng-show="sortType == 'Name' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                <span ng-show="sortType == 'Name' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+              </a>
+            </th>
+            <th>
+              <a ui-sref="volumes" ng-click="order('Driver')">
+                Driver
+                <span ng-show="sortType == 'Driver' && !sortReverse" class="glyphicon glyphicon-chevron-down"></span>
+                <span ng-show="sortType == 'Driver' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+              </a>
+            </th>
+            <th>
+              <a ui-sref="volumes" ng-click="order('Mountpoint')">
+                Mountpoint
+                <span ng-show="sortType == 'Mountpoint' && !sortReverse"
+                      class="glyphicon glyphicon-chevron-down"></span>
+                <span ng-show="sortType == 'Mountpoint' && sortReverse" class="glyphicon glyphicon-chevron-up"></span>
+              </a>
+            </th>
+          </tr>
           </thead>
           <tbody>
-            <tr dir-paginate="volume in (state.filteredVolumes = (volumes | filter:state.filter | orderBy:sortType:sortReverse | itemsPerPage: state.pagination_count))">
-              <td><input type="checkbox" ng-model="volume.Checked" ng-change="selectItem(volume)"/></td>
-              <td>{{ volume.Name|truncate:50 }}</td>
-              <td>{{ volume.Driver }}</td>
-              <td>{{ volume.Mountpoint }}</td>
-            </tr>
-            <tr ng-if="!volumes">
-              <td colspan="4" class="text-center text-muted">Loading...</td>
-            </tr>
-            <tr ng-if="volumes.length == 0">
-              <td colspan="4" class="text-center text-muted">No volumes available.</td>
-            </tr>
+          <tr
+            dir-paginate="volume in (state.filteredVolumes = (volumes | filter:state.filter | orderBy:sortType:sortReverse | itemsPerPage: state.pagination_count))">
+            <td><input type="checkbox" ng-model="volume.Checked" ng-change="selectItem(volume)"/></td>
+            <td>{{ volume.Name|truncate:50 }}</td>
+            <td>{{ volume.Driver }}</td>
+            <td>{{ volume.Mountpoint }}</td>
+          </tr>
+          <tr ng-if="!volumes">
+            <td colspan="4" class="text-center text-muted">Loading...</td>
+          </tr>
+          <tr ng-if="volumes.length == 0">
+            <td colspan="4" class="text-center text-muted">No volumes available.</td>
+          </tr>
           </tbody>
         </table>
         <div ng-if="volumes" class="pull-left pagination-controls">
@@ -83,4 +107,4 @@
       </div>
     </rd-widget-body>
     <rd-widget>
-    </div>
+</div>
