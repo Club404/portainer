@@ -40,6 +40,77 @@ angular.module('templates', [])
         },
       ];
 
+      $scope.getServiceInfoByName = function (ident) {
+        var settings = $scope.state.selectedTemplate ? $scope.state.selectedTemplate.Env || [] : [];
+        var found = settings
+          .filter(function (env) {
+            return env.name === ident;
+          });
+        return found.length ? found[0] : null;
+      };
+
+      $scope.getServiceName = function () {
+        var found = $scope.getServiceInfoByName('SERVICE_NAME');
+        return found ? found.value : null;
+      };
+
+      $scope.getServiceTag = function () {
+        var found = $scope.getServiceInfoByName('SERVICE_TAGS');
+        return found ? found.value : null;
+      };
+
+      $scope.getCurrentTags = function () {
+        var current = $scope.state.selectedTemplate ? $scope.state.selectedTemplate.tags : null;
+        var taggings = typeof current === 'string' ? current.split(',')
+            .map(function (tag) {
+              return tag ? tag.trim() : '';
+            })
+            .filter(function (tag) {
+              return tag;
+            }) : [];
+        return taggings;
+      };
+
+      $scope.getSystemTags = function (inputList) {
+        var reserved = $scope.bindTypes.map(function (item) {
+          return item.type;
+        });
+        return (inputList || $scope.getCurrentTags() || [])
+          .filter(function (tag) {
+            var match = /(.*)(:)(.*)/g.exec(tag);
+            return match ? reserved.indexOf(match[1]) >= 0 : reserved.indexOf(tag) >= 0;
+          });
+      };
+
+      $scope.updateTags = function (bindings) {
+        var current = $scope.getCurrentTags();
+        var systemOld = $scope.getSystemTags(current);
+        var userDefined = current.filter(function (tag) {
+          return systemOld.indexOf(tag) < 0;
+        });
+        if (!bindings) {
+          bindings = $scope.formValues.bindings || [];
+        }
+        var systemDefined = bindings.map(function (item) {
+          if (item.type) {
+            if (bindings.length === 1) {
+              return item.type;
+            } else if (bindings.length > 1) {
+              var tagName = item.type + ':' + item.port.containerPort;
+              if (item.name) {
+                tagName = tagName + (item.name && item.name.startsWith('/') ? item.name : '/' + item.name);
+              }
+              return tagName;
+            }
+          }
+        });
+
+        if ($scope.state.selectedTemplate) {
+          // Update the tag value
+          $scope.state.selectedTemplate.tags = systemDefined.concat(userDefined).join(',');
+        }
+      };
+
       $scope.changePaginationCount = function () {
         Pagination.setPaginationCount('templates', $scope.state.pagination_count);
       };
@@ -61,13 +132,14 @@ angular.module('templates', [])
       };
 
       $scope.clearPortBindings = function (bindType, portNum) {
-        $scope.formValues.bindings.forEach(function(item){
+        $scope.formValues.bindings.forEach(function (item) {
           if (item.port) {
             item.port.binding = null;
             item.port = null;
           }
         });
         $scope.formValues.bindings = [];
+        $scope.updateTags();
       };
 
       $scope.setPortBinding = function (bindType, portNum) {
@@ -85,6 +157,10 @@ angular.module('templates', [])
 
           // Add link back to the binding
           if (instance.port) {
+            var oldIndex = instance.port.binding ? $scope.formValues.bindings.indexOf(instance.port.binding) : -1;
+            if (oldIndex > -1) {
+              $scope.formValues.bindings.splice(oldIndex, 1);
+            }
             instance.port.binding = instance;
           }
 
@@ -109,17 +185,21 @@ angular.module('templates', [])
           }
         } else if (portNum) {
           // Remove the current instance (if exists)
-          var toRemove = $scope.formValues.bindings.find(function (item) {
+          var toRemove = ($scope.formValues.bindings || []).find(function (item) {
             return item.port && (parseInt(item.port.containerPort) === parseInt(portNum));
           });
-          if (toRemove && toRemove.length) {
-            $scope.formValues.bindings.remove(toRemove);
+          var removeIndex = !toRemove ? -1 : $scope.formValues.bindings.indexOf(toRemove);
+          if (removeIndex > -1) {
+            $scope.formValues.bindings.slice(removeIndex, 1);
           }
+
           if (instance.port.binding) {
             instance.port.binding = null;
             instance.port = null;
           }
         }
+
+        $scope.updateTags();
       };
 
       $scope.createTemplate = function () {
@@ -168,8 +248,21 @@ angular.module('templates', [])
         $('#template_' + selectedItem).toggleClass("container-template--selected");
         selectedItem = idx;
         var selectedTemplate = $scope.templates[idx];
-        $scope.state.selectedTemplate = selectedTemplate;
+        $scope.state.selectedTemplate = angular.copy(selectedTemplate);
 
+        // Load the service group name from meta data
+        var nameFromEnv = $scope.getServiceName() || null;
+        if (nameFromEnv) {
+          $scope.state.selectedTemplate.name = nameFromEnv;
+        }
+
+        // Load the service group tags from meta data
+        var tagsFromEnv = $scope.getServiceTag() || null;
+        if (tagsFromEnv) {
+          $scope.state.selectedTemplate.tags = tagsFromEnv;
+        }
+
+        // Parse the image identifier and expose the name and attributes
         var match = /(\S+\/)?([\w|\-|_]+)(:\S+)?/g.exec(selectedTemplate.Image);
         if (match) {
           $scope.state.imageParts = {
@@ -179,6 +272,7 @@ angular.module('templates', [])
           };
         }
 
+        // Try and auto select a default network
         if (selectedTemplate.Network) {
           $scope.formValues.network = _.find($scope.availableNetworks, function (o) {
             return o.Name === selectedTemplate.Network;
@@ -188,7 +282,6 @@ angular.module('templates', [])
             return o.Name === "bridge";
           });
         }
-        $anchorScroll('selectedTemplate');
       }
 
       function createTemplateConfiguration(template) {

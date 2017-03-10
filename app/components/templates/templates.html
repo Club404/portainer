@@ -82,19 +82,22 @@
                          name="container_name"
                          style="width: 250px"
                          class="form-control input-sm"
+                         ng-class="{ 'alert alert-info no-padding' : formValues.name }"
                          ng-model="formValues.name"
-                         placeholder="e.g. {{ state.imageParts.name || 'portal' }} (optional)">
+                         placeholder="(optional)">
                   <input ng-switch-when="1"
                          name="bind_opts"
                          style="width: 250px"
                          class="form-control input-sm"
+                         ng-class="{ 'alert alert-info no-padding' : formValues.bindings[0].name }"
                          ng-model="formValues.bindings[0].name"
-                         placeholder="{{ state.imageParts.name || 'your-app-name' }}">
+                         placeholder="{{ state.imageParts.name || 'service-group-name' }}">
                   <input ng-switch-default=""
                          style="width: 250px"
                          class="form-control input-sm"
-                         ng-model="formValues.name"
-                         placeholder="{{ state.imageParts.name || 'e.g. my-container (optional)' }}">
+                         ng-model="state.selectedTemplate.name"
+                         placeholder="Multiple ports mapped"
+                         readonly>
                 </span>
 
                 <span class="input-group-addon">
@@ -193,6 +196,26 @@
                      readonly>
             </div>
           </div>
+          <div class="form-group">
+            <label for="field_tags" class="col-sm-2 control-label text-left">Service Tags</label>
+            <div class="col-sm-5">
+
+              <link
+                href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput-typeahead.css"
+                rel="stylesheet">
+              <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput-angular.min.js"></script>
+
+              <input type="text"
+                     id="field_tags"
+                     class="form-control"
+                     ng-model="state.selectedTemplate.tags"
+                     data-role="tagsinput">
+            </div>
+            <div class="col-sm-5">
+              <input type="text" value="Amsterdam,Washington,Sydney,Beijing,Cairo" data-role="tagsinput"/>
+            </div>
+          </div>
           <div class="form-group" ng-if="state.showAdvancedOptions">
             <label class="col-sm-2 control-label text-left">
               External port mappings
@@ -280,6 +303,7 @@
                          ng-disabled="!portBinding.containerPort"
                          ng-class="{ 'alert alert-info no-padding' : portBinding.binding.name }"
                          ng-model="portBinding.binding.name"
+                         ng-change="updateTags()"
                          placeholder="{{ state.imageParts.name }}">
 
                 </div>
@@ -456,10 +480,9 @@
                 </div>
 
               </div>
-
-
             </div>
           </div>
+
           <div ng-repeat="var in state.selectedTemplate.Env" ng-if="!var.set" class="form-group">
             <label for="field_{{ $index }}" class="col-sm-2 control-label text-left">{{ var.label }}</label>
             <div class="col-sm-10">
