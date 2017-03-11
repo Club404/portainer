@@ -487,6 +487,13 @@ angular.module('portainer', [
         }
       };
     });
+
+    // Set the notification to the bottom of the screen
+    if ($ && $.gritter) {
+      $.extend($.gritter.options, {
+        position: 'bottom-right'
+      });
+    }
   }])
   .run(['$rootScope', '$state', 'Authentication', 'authManager', 'StateManager', 'Messages', 'Analytics', function ($rootScope, $state, Authentication, authManager, StateManager, Messages, Analytics) {
     StateManager.initialize().then(function success(state) {
