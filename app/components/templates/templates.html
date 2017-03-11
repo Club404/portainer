@@ -27,7 +27,14 @@
     <rd-widget>
       <rd-widget-header icon="fa-plug" simple="true">
         <div class="pull-left" role="group" aria-label="...">
-          <form class="form-inline col-lg-12 col-md-12 col-xs-12">
+          <form class="form-inline col-lg-12 col-md-12 col-xs-12" style="padding: 0">
+            <div class="form-group"
+                 style="padding-right: 0px;">
+              <div style="cursor: pointer;"
+                   ng-click="state.selectedTemplate = null">
+                <i class="fa fa-arrow-left"></i>
+              </div>
+            </div>
             <div class="form-group"
                  style="padding-right: 0px;">
               <img class="custom-header-ico" ng-src="{{ state.selectedTemplate.Logo }}"></img>
@@ -196,24 +203,13 @@
                      readonly>
             </div>
           </div>
-          <div class="form-group">
+          <div class="form-group" ng-if="state.showAdvancedOptions">
             <label for="field_tags" class="col-sm-2 control-label text-left">Service Tags</label>
-            <div class="col-sm-5">
-
-              <link
-                href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput-typeahead.css"
-                rel="stylesheet">
-              <script
-                src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput-angular.min.js"></script>
-
+            <div class="col-sm-10">
               <input type="text"
                      id="field_tags"
                      class="form-control"
-                     ng-model="state.selectedTemplate.tags"
-                     data-role="tagsinput">
-            </div>
-            <div class="col-sm-5">
-              <input type="text" value="Amsterdam,Washington,Sydney,Beijing,Cairo" data-role="tagsinput"/>
+                     ng-model="state.selectedTemplate.tags">
             </div>
           </div>
           <div class="form-group" ng-if="state.showAdvancedOptions">
@@ -482,8 +478,9 @@
               </div>
             </div>
           </div>
-
-          <div ng-repeat="var in state.selectedTemplate.Env" ng-if="!var.set" class="form-group">
+          <div class="form-group"
+               ng-repeat="var in state.selectedTemplate.Env"
+               ng-if="!var.set && ['SERVICE_NAME', 'SERVICE_TAGS'].indexOf(var.name) < 0">
             <label for="field_{{ $index }}" class="col-sm-2 control-label text-left">{{ var.label }}</label>
             <div class="col-sm-10">
               <select ng-if="applicationState.endpoint.mode.provider !== 'DOCKER_SWARM' && var.type === 'container'"
@@ -507,7 +504,7 @@
   </div>
 </div>
 
-<div class="row">
+<div class="row" ng-if="!state.selectedTemplate">
   <div class="col-lg-12 col-md-12 col-xs-12">
     <rd-widget>
       <rd-widget-header icon="fa-rocket" title="Available templates">

@@ -40,12 +40,22 @@ angular.module('templates', [])
         },
       ];
 
-      $scope.getServiceInfoByName = function (ident) {
+      $scope.getServiceInfoByName = function (ident, createIfNotExists) {
         var settings = $scope.state.selectedTemplate ? $scope.state.selectedTemplate.Env || [] : [];
         var found = settings
           .filter(function (env) {
             return env.name === ident;
           });
+        if (createIfNotExists && !found.length) {
+          found = [
+            {
+              "name": ident,
+              "label": ident,
+              "value": ""
+            }
+          ];
+          $scope.state.selectedTemplate.Env.push(found[0]);
+        }
         return found.length ? found[0] : null;
       };
 
@@ -200,10 +210,24 @@ angular.module('templates', [])
         }
 
         $scope.updateTags();
+
+        return instance;
       };
 
       $scope.createTemplate = function () {
         $('#createContainerSpinner').show();
+
+        if ($scope.formValues.bindings && $scope.formValues.bindings.length) {
+          var serviceName = $scope.getServiceInfoByName('SERVICE_NAME', true);
+          var serviceTags = $scope.getServiceInfoByName('SERVICE_TAGS', true);
+
+          if ($scope.formValues.bindings.length === 1) {
+            serviceName.value = $scope.formValues.bindings[0].name;
+          }
+
+          serviceTags.value = $scope.state.selectedTemplate.tags;
+        }
+
         var template = $scope.state.selectedTemplate;
         var templateConfiguration = createTemplateConfiguration(template);
         var generatedVolumeCount = TemplateHelper.determineRequiredGeneratedVolumeCount(template.Volumes);
@@ -249,6 +273,7 @@ angular.module('templates', [])
         selectedItem = idx;
         var selectedTemplate = $scope.templates[idx];
         $scope.state.selectedTemplate = angular.copy(selectedTemplate);
+        $scope.formValues.bindings = [];
 
         // Load the service group name from meta data
         var nameFromEnv = $scope.getServiceName() || null;
@@ -266,10 +291,28 @@ angular.module('templates', [])
         var match = /(\S+\/)?([\w|\-|_]+)(:\S+)?/g.exec(selectedTemplate.Image);
         if (match) {
           $scope.state.imageParts = {
-            repo: match.length > 1 ? match[1].replace('/', '') : null,
-            name: match.length > 2 ? match[2] : null,
-            tags: match.length > 3 ? match[3].replace(':', '') : null
+            repo: match.length > 1 && match[1] ? match[1].replace('/', '') : null,
+            name: match.length > 2 && match[2] ? match[2] : null,
+            tags: match.length > 3 && match[3] ? match[3].replace(':', '') : null
           };
+        }
+
+        // Parse system tags to see if there are bindings defined
+        var systemTags = $scope.getSystemTags();
+        if (systemTags && systemTags.length) {
+          systemTags.forEach(function (item) {
+            var match = /([\w|\-|_]+)(:\S+)?(\/\S+)?/g.exec(item);
+            var name = match && match.length > 1 ? match[1] : item;
+            var port = match && match.length > 2 ? match[2] : undefined;
+            var opts = match && match.length > 3 ? match[3] : undefined;
+            var bind = $scope.bindTypes.find(function (bind) {
+              return bind.type === name;
+            });
+            var instance = $scope.setPortBinding(bind, port);
+            if (instance) {
+              instance.name = $scope.getServiceName();
+            }
+          });
         }
 
         // Try and auto select a default network
