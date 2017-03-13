@@ -145,7 +145,10 @@ module.exports = function (grunt) {
       ],
       html: ['index.html'],
       tpl: ['app/components/**/*.html'],
-      css: ['assets/css/app.css'],
+      css: [
+        'assets/css/app.css',
+        'assets/css/extended.css'
+      ],
       cssVendor: [
         'bower_components/bootstrap/dist/css/bootstrap.css',
         'bower_components/jquery.gritter/css/jquery.gritter.css',
@@ -224,6 +227,16 @@ module.exports = function (grunt) {
             cwd: 'assets/images/'
           },
           {dest: '<%= distdir %>/ico', src: '**', expand: true, cwd: 'assets/ico'}
+        ]
+      },
+      templates: {
+        files: [
+          {
+            dest: '<%= distdir %>/templates/',
+            src: ['*.json'],
+            expand: true,
+            cwd: './templates/'
+          }
         ]
       }
     },

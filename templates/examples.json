@@ -1,0 +1,251 @@
+[
+  {
+    "title": "Test Py",
+    "description": "Simple endpoint written in python and returns an html response",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Python.svg",
+    "image": "example.com:5000/test-py:latest",
+    "env": [
+      {
+        "name": "SERVICE_NAME",
+        "label": "Service group name",
+        "value": "test-py"
+      },
+      {
+        "name": "SERVICE_TAGS",
+        "label": "Specify interactions via tags",
+        "value": "app"
+      },
+      {
+        "name": "TEST_STORAGE_REDIS",
+        "label": "Name of the redis storage endpoint",
+        "value": "test-py-db"
+      }
+    ],
+    "ports": [
+      "5000/tcp"
+    ]
+  },
+  {
+    "title": "Redis",
+    "description": "Open-source in-memory data structure store",
+    "logo": "https://cloudinovasi.id/assets/img/logos/redis.png",
+    "image": "redis:alpine",
+    "env": [
+      {
+        "name": "SERVICE_NAME",
+        "label": "Service group name",
+        "value": "redis"
+      },
+      {
+        "name": "SERVICE_TAGS",
+        "label": "Specify interactions via tags",
+        "value": "db"
+      }
+    ],
+    "ports": [
+      "6379/tcp"
+    ],
+    "volumes": [
+      "/data"
+    ]
+  },
+  {
+    "title": "Online storage",
+    "description": "Minio is an object storage server released under Apache License v2.0.",
+    "logo": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KIDwhLS0gQ3JlYXRlZCB3aXRoIE1ldGhvZCBEcmF3IC0gaHR0cDovL2dpdGh1Yi5jb20vZHVvcGl4ZWwvTWV0aG9kLURyYXcvIC0tPgoKIDxnPgogIDx0aXRsZT5iYWNrZ3JvdW5kPC90aXRsZT4KICA8cmVjdCBmaWxsPSJub25lIiBpZD0iY2FudmFzX2JhY2tncm91bmQiIGhlaWdodD0iMTAyIiB3aWR0aD0iMTAyIiB5PSItMSIgeD0iLTEiLz4KICA8ZyBkaXNwbGF5PSJub25lIiBvdmVyZmxvdz0idmlzaWJsZSIgeT0iMCIgeD0iMCIgaGVpZ2h0PSIxMDAlIiB3aWR0aD0iMTAwJSIgaWQ9ImNhbnZhc0dyaWQiPgogICA8cmVjdCBmaWxsPSJ1cmwoI2dyaWRwYXR0ZXJuKSIgc3Ryb2tlLXdpZHRoPSIwIiB5PSIwIiB4PSIwIiBoZWlnaHQ9IjEwMCUiIHdpZHRoPSIxMDAlIi8+CiAgPC9nPgogPC9nPgogPGc+CiAgPHRpdGxlPkxheWVyIDE8L3RpdGxlPgogIDxyZWN0IHJ4PSIyMCIgaWQ9InN2Z18yMiIgaGVpZ2h0PSIxMDAiIHdpZHRoPSIxMDAiIHk9IjAiIHg9IjAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2U9IiMyZTM1M2IiIGZpbGw9IiMyZTM1M2IiLz4KICA8bWV0YWRhdGEgdHJhbnNmb3JtPSJtYXRyaXgoMC4zNzM1NjU3NzM3NjA0NTA1LDAsMCwwLjM3MzU2NTc3Mzc2MDQ1MDUsMCwwKSAiIGlkPSJzdmdfMTkiPmltYWdlL3N2Zyt4bWw8L21ldGFkYXRhPgogIDxnIGlkPSJzdmdfMjEiPgogICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgwLjM3MzU2NTc3Mzc2MDQ1MDUsMCwwLDAuMzczNTY1NzczNzYwNDUwNSwwLDApICIgaWQ9InN2Z18xMiI+CiAgICA8ZyB0cmFuc2Zvcm09Im1hdHJpeCgxLjAxMTMsMCwwLDEuMDExMyw1LjQ2MDQsLTEzLjIyNCkgIiBpZD0ic3ZnXzEzIj4KICAgICA8ZyBpZD0ic3ZnXzE0Ij4KICAgICAgPGcgaWQ9InN2Z18xNSI+CiAgICAgICA8dGl0bGUgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTYzMi42MzE0Njk3MjY1NjI1LC0zOTQuNDAyMDM4NTc0MjE4NzUpIHRyYW5zbGF0ZSg2OTkuOTI3OTc4NTE1NjI1LDApIHRyYW5zbGF0ZSgwLDQyMi41OTc5MzA5MDgyMDMxKSB0cmFuc2xhdGUoLTczOS4zMjAwMDczMjQyMTg4LDI5NS4yMzAwMTA5ODYzMjgxKSB0cmFuc2xhdGUoMC45ODg4MjYyNzQ4NzE4MjYyLC05NzEuODY3ODU4ODg2NzE4OCkgIj5NaW5pbyBMb2dvPC90aXRsZT4KICAgICAgIDxwYXRoIGZpbGw9IiNmOGY4ZjgiIGQ9Im0xMzIuMzk1MzI4LDE1My4zNjgwNDRjMTIuNDA4LDQuMTcwNyAyNy4wNSw5LjExNjYgMzcuOTUyLDEyLjgwOWMtMTIuMDEzLC0yMS4yMDcgLTI3Ljg0MywtMzQuMTE3IC0zNy45NTIsLTQwLjc4NmwwLDI3Ljk3N3ptMCw5My43MjFsLTE0LjIyMyw4Ljk2MjJsMCwtOTIuNDU5Yy0xLjUyOTgsLTAuNTEzOSAtMi45Nzk1LC0wLjk5ODEgLTQuMzM0LC0xLjQ1MjZjLTE5Ljk4NiwtNi42NzE5IC0zMi43MjEsLTE3Ljk1NyAtMzUuODUyLC0zMS43NzljLTIuNTQ1OCwtMTEuMjE0IDEuNTUwNiwtMjMuMDIyIDExLjI0NywtMzIuMzk3YzguODQ5MywtOC41NTIyIDIxLjIyOCwtMTguNCAzMS4xNzMsLTI2LjMxNmMzLjYwMzMsLTIuODY2NiA2LjczMTMsLTUuMzE3MyA5LjIwMjgsLTcuMzk2N2MyLjMxNDEsLTEuOTM5OCAxLjYxNiwtNC45NTQ5IDAuNTcwMzMsLTYuMjE0NGMtMS43NDA3LC0yLjA5MTMgLTQuNjE5MiwtMS43NDY3IC02LjU2MiwtMC4zMjM3OWMtMC4xMDM5OCwwLjA4MDIgLTUuNjU2LDQuNDA4MyAtNS42NTYsNC40MDgzbC04LjU4MiwtMTEuNTdzNS42MDg0LC00LjE0MSA1LjgyMjMsLTQuMzAxNGM4LjM5NzgsLTYuMTU1IDE5LjU0LC00Ljk4NzYgMjUuOTI0LDIuNzE1MWMzLjE5MDQsMy44NDA5IDQuNjg0Niw4LjY5NzggNC4yMDkzLDEzLjY3MWMtMC40NzIzMiw0Ljk1NDkgLTIuODQ1OCw5LjQzMTUgLTYuNjgwOCwxMi41OTJjLTIuNTg0NCwyLjEyOTkgLTUuNzM5MSw0LjY0MyAtOS4zOTI5LDcuNTQ1MmMtOS43MDc4LDcuNzI2NCAtMjEuNzg5LDE3LjMzOSAtMzAuMTQyLDI1LjQxOWMtNi4xMjUzLDUuOTIzMyAtOC43MDY3LDEyLjY3OCAtNy4yNjksMTkuMDIzYzEuOTg3Myw4Ljc1NDIgMTEuMzMzLDE2LjM0MSAyNi4zMjIsMjEuMzc5bDAsLTQ2LjIyNWM0MC4yOTYsMTMuNjIzIDY4Ljc2Miw2MS4yMjMgNzguMjA2LDg3LjY0YzAsMCAtNDEuNzYzLC0xNC4xNTggLTYzLjk4MywtMjEuNjQxbDAsNzguNzIiIGlkPSJzdmdfMTgiLz4KICAgICAgIDxwYXRoIGZpbGw9IiNjZGNjY2EiIGQ9Im0xMzIuMzk1MzI4LDE3Ny42ODgwNDRsLTE0LjIyMywtNC43ODI2bDAsLTkuMzA5N2wxNC4yMjMsNC43NzY3bDAsOS4zMTU3IiBpZD0ic3ZnXzE3Ii8+CiAgICAgICA8cGF0aCBmaWxsPSIjZjE0NjIxIiBkPSJtNjMuNzI1MzI4LDk2LjYxODA0NGMtMC4yMzQ2OSwwLjE2NjM2IC0wLjU0OTU2LDAuMTQ4NTMgLTAuNzMwNzcsLTAuMDc0M2MtMC4xNzgyMywtMC4yMjU3NiAtMC4xMzA2MywtMC41Mzc2NiAwLjA4MDIsLTAuNzMzNzNjNC45MzExLC00LjUxNTIgMjQuNDU3LC0yMy44NjggNDYuMzA4LC00NS4yNjJsOC41ODE5LDExLjU3cy01My41NDEsMzQuMDEzIC01NC4yMzksMzQuNSIgaWQ9InN2Z18xNiIvPgogICAgICA8L2c+CiAgICAgPC9nPgogICAgPC9nPgogICA8L2c+CiAgPC9nPgogPC9nPgo8L3N2Zz4=",
+    "image": "example.com:5000/minio:latest",
+    "env": [
+      {
+        "name": "SERVICE_NAME",
+        "label": "Service group name",
+        "value": "storage"
+      },
+      {
+        "name": "SERVICE_TAGS",
+        "label": "Specify interactions via tags",
+        "value": "app"
+      },
+      {
+        "name": "MINIO_ACCESS_KEY",
+        "label": "Minio Access Key",
+        "value": "my_key"
+      },
+      {
+        "name": "MINIO_SECRET_KEY",
+        "label": "Minio Secret Key",
+        "value": "my_password"
+      }
+    ],
+    "ports": [
+      "9000/tcp"
+    ],
+    "volumes": [
+      "/data"
+    ]
+  },
+  {
+    "title": "Nginx Server",
+    "description": "High performance web server",
+    "logo": "https://www.phusionpassenger.com/library/images/nginx-37d95ef9.png",
+    "image": "nginx:alpine",
+    "env": [
+      {
+        "name": "SERVICE_NAME",
+        "label": "Service group name",
+        "value": "nginx"
+      },
+      {
+        "name": "SERVICE_TAGS",
+        "label": "Specify interactions via tags",
+        "value": "app"
+      }
+    ],
+    "ports": [
+      "80/tcp",
+      "443/tcp"
+    ]
+  },
+  {
+    "title": "PostgreSQL",
+    "description": "The most advanced open-source database",
+    "logo": "http://tecadmin.net/wp-content/uploads/2013/04/Postgres-Logo.png",
+    "image": "postgres:latest",
+    "env": [
+      {
+        "name": "SERVICE_NAME",
+        "label": "Service group name",
+        "value": "pgsql"
+      },
+      {
+        "name": "SERVICE_TAGS",
+        "label": "Specify interactions via tags",
+        "value": "db"
+      },
+      {
+        "name": "POSTGRES_PASSWORD",
+        "label": "Superuser password"
+      }
+    ],
+    "ports": [
+      "5432/tcp"
+    ],
+    "volumes": [
+      "/var/lib/postgresql/data"
+    ]
+  },
+  {
+    "title": "MongoDB",
+    "description": "Open-source document-oriented database",
+    "logo": "https://cloudinovasi.id/assets/img/logos/mongo.png",
+    "image": "mongo:latest",
+    "env": [
+      {
+        "name": "SERVICE_NAME",
+        "label": "Service group name",
+        "value": "mongodb"
+      },
+      {
+        "name": "SERVICE_TAGS",
+        "label": "Specify interactions via tags",
+        "value": "db"
+      }
+    ],
+    "ports": [
+      "27017/tcp"
+    ],
+    "volumes": [
+      "/data/db"
+    ]
+  },
+  {
+    "title": "Elasticsearch",
+    "description": "Open-source search and analytics engine",
+    "logo": "https://cloudinovasi.id/assets/img/logos/elasticsearch.png",
+    "image": "elasticsearch:latest",
+    "env": [
+      {
+        "name": "SERVICE_NAME",
+        "label": "Service group name",
+        "value": "elastic_search"
+      },
+      {
+        "name": "SERVICE_TAGS",
+        "label": "Specify interactions via tags",
+        "value": "db"
+      }
+    ],
+    "ports": [
+      "9200/tcp",
+      "9300/tcp"
+    ],
+    "volumes": [
+      "/usr/share/elasticsearch/data"
+    ]
+  },
+  {
+    "title": "Grafana",
+    "description": "Open-source graphing and dashboard tool",
+    "logo": "http://cyphree.architektur-bau.hs-augsburg.de/grafana/public/img/grafana_icon.svg",
+    "image": "grafana/grafana",
+    "env": [
+      {
+        "name": "GF_SECURITY_ADMIN_PASSWORD",
+        "label": "Superuser password",
+        "value": "secret"
+      },
+      {
+        "name": "SERVICE_NAME",
+        "label": "Service group name",
+        "value": "grafana"
+      },
+      {
+        "name": "SERVICE_TAGS",
+        "label": "Specify interactions via tags",
+        "value": "app"
+      }
+    ],
+    "ports": [
+      "3000/tcp"
+    ]
+  },
+  {
+    "title": "Ungit",
+    "description": "Git web UI that makes it easy to manage your sources",
+    "logo": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Git_icon.svg",
+    "image": "example.com:5000/ungit:latest",
+    "env": [
+      {
+        "name": "SSH_AUTH_SOCK",
+        "label": "Authentication socket",
+        "value": "/ssh-agent"
+      },
+      {
+        "name": "SERVICE_NAME",
+        "label": "Service group name",
+        "value": "ungit"
+      },
+      {
+        "name": "SERVICE_TAGS",
+        "label": "Specify interactions via tags",
+        "value": "app"
+      }
+    ]
+  },
+  {
+    "title": "Who Am I",
+    "description": "Tiny Go webserver that prints os information and HTTP request to output",
+    "logo": "https://newrelic.com/assets/pages/golang/go-mascot.svg",
+    "image": "emilevauge/whoami",
+    "ports": [
+      "80/tcp"
+    ]
+  },
+  {
+    "title": "Auto Updates",
+    "description": "Automatically update running containers",
+    "logo": "http://www.eticaretci.com/images/icon-guncelleme.png",
+    "image": "centurylink/watchtower:latest",
+    "ports": [
+    ]
+  }
+]

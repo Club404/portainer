@@ -1,0 +1,45 @@
+#sidebar-wrapper {
+  background: #2e3c42;
+}
+
+ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a:hover, ul.sidebar .sidebar-main a {
+  background: #37474f;
+}
+
+.no-info-big {
+  color: silver;
+  font-size: 18px;
+  text-align: center;
+  margin: 64px auto;
+}
+
+.compact .table {
+  margin-bottom: 3px !important;
+}
+
+.compact .row > div {
+  margin-bottom: 3px !important;
+}
+
+.compact .widget-header {
+  line-height: 24px;
+}
+
+.col-same-height {
+  display: table-cell;
+  float: none !important;
+}
+
+.row-same-height {
+  display: table;
+  width: 100%;
+}
+
+.trim-bottom {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.gray-background {
+  background-color: #f3f3f3;
+}
