@@ -1,3 +1,5 @@
+@import 'sidebar.css';
+
 #sidebar-wrapper {
   background: #2e3c42;
 }
@@ -35,9 +37,20 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
   width: 100%;
 }
 
+.margin-top {
+  margin-top: 16px;
+}
+
 .trim-bottom {
   margin-bottom: 0;
   padding-bottom: 0;
+}
+
+.trim-sides {
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .gray-background {

@@ -357,12 +357,14 @@ angular.module('templates', [])
       function initTemplates() {
         Config.$promise.then(function (c) {
           $q.all({
+            catalogs: TemplateService.getCatalog(),
             templates: TemplateService.getTemplates(),
             containers: ContainerService.getContainers(0, c.hiddenLabels),
             networks: NetworkService.getNetworks(),
             volumes: VolumeService.getVolumes()
           })
             .then(function success(data) {
+              $scope.catalogs = data.catalogs;
               $scope.templates = data.templates;
               $scope.runningContainers = data.containers;
               $scope.availableNetworks = filterNetworksBasedOnProvider(data.networks);

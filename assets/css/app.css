@@ -125,6 +125,12 @@ a[ng-click] {
   margin-right: 2px;
 }
 
+.thumbnail-logo {
+  max-width: 128px;
+  max-height: 128px;
+  margin: 16px auto;
+}
+
 .btn-responsive {
   padding: 5px 10px;
   font-size: 12px;

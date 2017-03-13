@@ -147,6 +147,7 @@ module.exports = function (grunt) {
       tpl: ['app/components/**/*.html'],
       css: [
         'assets/css/app.css',
+        'assets/css/side-menu.css',
         'assets/css/extended.css'
       ],
       cssVendor: [
@@ -229,13 +230,13 @@ module.exports = function (grunt) {
           {dest: '<%= distdir %>/ico', src: '**', expand: true, cwd: 'assets/ico'}
         ]
       },
-      templates: {
+      catalogs: {
         files: [
           {
-            dest: '<%= distdir %>/templates/',
+            dest: '<%= distdir %>/catalogs/',
             src: ['*.json'],
             expand: true,
-            cwd: './templates/'
+            cwd: './catalogs/'
           }
         ]
       }

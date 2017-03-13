@@ -528,6 +528,7 @@ angular.module('portainer', [
   .constant('AUTH_ENDPOINT', 'api/auth')
   .constant('USERS_ENDPOINT', 'api/users')
   .constant('ENDPOINTS_ENDPOINT', 'api/endpoints')
+  .constant('CATALOGS_ENDPOINT', 'api/catalogs')
   .constant('TEMPLATES_ENDPOINT', 'api/templates')
   .constant('PAGINATION_MAX_ITEMS', 10)
   .constant('UI_VERSION', 'v1.11.3');
