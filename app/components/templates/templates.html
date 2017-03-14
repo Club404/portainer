@@ -8,78 +8,64 @@
   <rd-header-content>Templates</rd-header-content>
 </rd-header>
 
-<div id="selectedTemplate" class="row compact" ng-if="state.selectedTemplate">
+<div class="row compact"
+     ng-init="nav = { expanded: { compose: true, default: false } }">
   <div class="col-lg-12 col-md-12 col-xs-12">
-    <div>
-      <div style="margin: 0; padding: 3px 8px;"
-           class="alert alert-info"
-           ng-if="globalNetworkCount === 0 && applicationState.endpoint.mode.provider === 'DOCKER_SWARM'">
-              <span class="small text-muted">When using Swarm, we recommend deploying containers in a shared network. Looks like you don't have any shared network, head over the <a
-                ui-sref="networks">networks view</a> to create one.</span>
-      </div>
-      <div style="margin: 0; padding: 3px 8px;"
-           class="alert alert-warning"
-           ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM_MODE'">
-        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-        <span class="small text-muted">App templates cannot be used with swarm-mode at the moment. You can still use them to quickly deploy containers to the Docker host.</span>
-      </div>
-    </div>
     <rd-widget>
       <rd-widget-header icon="fa-rocket" title="Application Templates">
-        <div class="pull-right" role="group" aria-label="...">
+        <div ng-if="!state.selectedTemplate" class="pull-right">
+          <span>
+            Items per page:
+            <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
+              <option value="0">All</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            &nbsp;
+          </span>
+          <span>
+            <a class="btn btn-primary btn-xs"
+               ng-disabled="!importTemplates"
+               ng-click="importTemplates()">
+              Import Templates
+            </a>
+          </span>
+        </div>
+        <div ng-if="state.selectedTemplate" class="pull-right" role="group" aria-label="...">
           <form class="form-inline col-lg-12 col-md-12 col-xs-12 trim-sides">
             <div class="form-group">
               <i id="createContainerSpinner" class="fa fa-cog fa-spin" style="margin-left: 5px; display: none;"></i>
             </div>
             <div class="form-group">
               <div class="input-group">
-                <div class="input-group-addon">
-                  <div class="dropdown">
-                    <span href=""
-                          style="cursor: pointer;"
-                          class="dropdown-toggle"
-                          data-toggle="dropdown">
-                      <i class="fa fa-sitemap"></i> {{ formValues.network ? formValues.network.Name : 'Network' }}
-                      <span class="caret"></span>
-                    </span>
-                    <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
-                      <li ng-if="!availableNetworks.length"
-                          class="disabled"
-                          ng-disabled="true">
-                        <a ng-disabled="true"><i class="fa fa-question"></i> No networks</a>
-                      </li>
-                      <li ng-repeat="net in availableNetworks">
-                        <a ng-click="formValues.network = net"><i class="fa fa-sitemap"></i> {{ net.Name }}</a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                <div class="btn-group btn-group-sm btn-default">
-                  <a class="btn btn-sm btn-default"
+                <div class="btn-group btn-group-xs btn-default">
+                  <a class="btn btn-xs btn-default"
                      ng-if="state.showAdvancedOptions"
                      ng-click="addPortBinding()">
                     <i class="fa fa-plus-circle space-right" aria-hidden="true"></i>
                     Add port
                   </a>
-                  <a class="btn btn-sm btn-default"
+                  <a class="btn btn-xs btn-default"
                      ng-if="state.showAdvancedOptions"
                      ng-click="addVolume()">
                     <i class="fa fa-plus-circle" aria-hidden="true"></i>
                     Map Volume
                   </a>
-                  <a class="btn btn-sm btn-default"
+                  <a class="btn btn-xs btn-default"
                      ng-if="!state.showAdvancedOptions"
                      ng-click="state.showAdvancedOptions = true;">
                     <i class="fa fa-plus space-right" aria-hidden="true"></i>
                     More options
                   </a>
-                  <a class="btn btn-sm btn-default"
+                  <a class="btn btn-xs btn-default"
                      ng-if="state.showAdvancedOptions"
                      ng-click="state.showAdvancedOptions = false;">
                     <i class="fa fa-minus space-right" aria-hidden="true"></i>
                     Less options
                   </a>
-                  <a class="btn btn-primary btn-sm"
+                  <a class="btn btn-xs btn-primary"
                      ng-disabled="!formValues.network"
                      ng-click="createTemplate()">
                     Create
@@ -91,12 +77,11 @@
         </div>
       </rd-widget-header>
       <rd-widget-body classes="no-padding">
-        <div class="row"
-             ng-class="{ 'row-same-height no-padding':catalogs.length }">
-          <div ng-if="catalogs.length"
-               class="trim-bottom trim-sides side-menu"
-               ng-class="{ 'col-same-height col-sm-2 col-xs-1': catalogs.length }">
+        <div class="row row-same-height no-padding">
 
+          <div ng-if="catalogs.length"
+               class="col-same-height trim-bottom trim-sides side-menu"
+               ng-class="{ 'col-sm-2 col-xs-1': catalogs.length }">
 
             <nav class="navbar navbar-default" role="navigation">
               <!-- Brand and toggle get grouped for better mobile display -->
@@ -112,129 +97,116 @@
 
                   <!-- Brand -->
                   <div class="brand-name-wrapper">
-                    <a class="navbar-brand" href="">
-                      <img class="custom-header-ico pull-left"
-                           ng-src="{{ state.selectedTemplate.Logo }}">
+                    <a style="width: 100%"
+                       class="navbar-brand"
+                       ng-click="nav.expanded.compose = !nav.expanded.compose || state.selectedTemplate">
                       <span>
-                        Create Instance
+                        <i class="fa fa-cogs"></i>
+                        Current Recipe
                       </span>
+                      <div class="pull-right"
+                           ng-class="{ 'dropdown': !nav.expanded.compose, 'dropup': nav.expanded.compose }">
+                        <span class="caret"></span>
+                      </div>
                     </a>
                   </div>
 
-                  <!-- Search -->
-                  <a data-toggle="collapse" href="#search" class="btn btn-default" id="search-trigger">
-                    <span class="glyphicon glyphicon-search"></span>
-                  </a>
-
-                  <!-- Search body -->
-                  <div id="search" class="panel-collapse collapse">
-                    <div class="panel-body">
-                      <form class="navbar-form" role="search">
-                        <div class="form-group">
-                          <input type="text" class="form-control" placeholder="Search">
-                        </div>
-                        <button type="submit" class="btn btn-default "><span class="glyphicon glyphicon-ok"></span>
-                        </button>
-                      </form>
+                  <!-- Compose Files and contents -->
+                  <div class="panel-collapse"
+                       ng-class="{ 'collapse': !nav.expanded.compose }">
+                    <div class="panel-body compose-drop-panel">
+                      <div ng-if="!state.selectedTemplate" class="no-info-big">
+                        <em>
+                          Drag items here
+                        </em>
+                      </div>
+                      <div ng-if="state.selectedTemplate">
+                        ...
+                      </div>
                     </div>
                   </div>
                 </div>
-
               </div>
 
-              <!-- Main Menu -->
+              <!-- Default Catalog -->
               <div class="side-menu-container">
-                <ul class="nav navbar-nav">
+                <ul class="nav navbar-nav" style="width: 100%">
 
-                  <li><a href=""><span class="glyphicon glyphicon-send"></span> Link</a></li>
-                  <li class="active"><a href=""><span class="glyphicon glyphicon-plane"></span> Active Link</a></li>
-                  <li><a href=""><span class="glyphicon glyphicon-cloud"></span> Link</a></li>
-
-                  <!-- Dropdown-->
-                  <li class="panel panel-default" id="dropdown">
-                    <a data-toggle="collapse" href="#dropdown-lvl1">
-                      <span class="glyphicon glyphicon-user"></span> Sub Level <span class="caret"></span>
+                  <!-- Menu Item -->
+                  <li id="dropdown"
+                      class="panel panel-default"
+                      ng-class="{ 'active': !state.selectedTemplate }">
+                    <a data-toggle="collapse"
+                       ng-click="nav.expanded.default = !nav.expanded.default"
+                       ng-class="{ 'dropdown': !nav.expanded.default, 'dropup': nav.expanded.default }">
+                      <span class="fa fa-cubes"></span>
+                      Default Templates <span class="caret"></span>
                     </a>
 
-                    <!-- Dropdown level 1 -->
-                    <div id="dropdown-lvl1" class="panel-collapse collapse">
+                    <!-- Catalog Templates -->
+                    <div class="panel-collapse"
+                         ng-class="{ 'collapse': state.selectedTemplate || !nav.expanded.default }">
                       <div class="panel-body">
-                        <ul class="nav navbar-nav">
-                          <li><a href="">Link</a></li>
-                          <li><a href="">Link</a></li>
-                          <li><a href="">Link</a></li>
-
-                          <!-- Dropdown level 2 -->
-                          <li class="panel panel-default" id="dropdown">
-                            <a data-toggle="collapse" href="#dropdown-lvl2">
-                              <span class="glyphicon glyphicon-off"></span> Sub Level <span class="caret"></span>
+                        <ul class="nav navbar-nav" style="width: 100%">
+                          <li ng-repeat="template in templates"
+                              ng-class="{ 'active': template.Title === state.selectedTemplate.Title}">
+                            <a ng-click="selectTemplate(template.index)">
+                              <img class="custom-header-ico pull-left" ng-src="{{ template.Logo }}">
+                              {{ template.Title || 'No Title' }}
                             </a>
-                            <div id="dropdown-lvl2" class="panel-collapse collapse">
-                              <div class="panel-body">
-                                <ul class="nav navbar-nav">
-                                  <li><a href="">Link</a></li>
-                                  <li><a href="">Link</a></li>
-                                  <li><a href="">Link</a></li>
-                                </ul>
-                              </div>
-                            </div>
                           </li>
                         </ul>
                       </div>
                     </div>
                   </li>
 
-                  <li><a href=""><span class="glyphicon glyphicon-signal"></span> Link</a></li>
-
                 </ul>
-              </div><!-- /.navbar-collapse -->
+              </div>
             </nav>
-            <script>
-              $(function () {
-                $('.navbar-toggle').click(function () {
-                  $('.navbar-nav').toggleClass('slide-in');
-                  $('.side-body').toggleClass('body-slide-in');
-                  $('#search').removeClass('in').addClass('collapse').slideUp(200);
-
-                  /// uncomment code for absolute positioning tweek see top comment in css
-                  //$('.absolute-wrapper').toggleClass('slide-in');
-
-                });
-
-                // Remove menu for searching
-                $('#search-trigger').click(function () {
-                  $('.navbar-nav').removeClass('slide-in');
-                  $('.side-body').removeClass('body-slide-in');
-
-                  /// uncomment code for absolute positioning tweek see top comment in css
-                  //$('.absolute-wrapper').removeClass('slide-in');
-
-                });
-              });
-            </script>
-
 
           </div>
-          <div class="padding trim-bottom"
-               ng-class="{ 'col-same-height col-md-10 col-sm-10 col-xs-11': catalogs.length, 'col-md-12 col-sm-12 col-xs-12': !catalogs.length }">
-            <form class="form-horizontal margin-top">
+          <div class="col-same-height padding trim-bottom"
+               ng-class="{ 'col-md-10 col-sm-10 col-xs-11': catalogs.length, 'col-md-12 col-sm-12 col-xs-12': !catalogs.length }">
 
-              <div class="row">
-                <div class="col-md-11">
+            <div ng-if="!state.selectedTemplate">
+              <div class="template-list">
+                <div dir-paginate="tpl in templates | itemsPerPage: state.pagination_count"
+                     class="container-template hvr-underline-from-center" id="template_{{ tpl.index }}"
+                     ng-click="selectTemplate(tpl.index)">
+                  <img class="logo" ng-src="{{ tpl.Logo }}"/>
+                  <div class="title">{{ tpl.Title }}</div>
+                  <div class="description">{{ tpl.Description }}</div>
+                </div>
+                <div ng-if="!templates" class="no-info-big">
+                  Loading...
+                </div>
+                <div ng-if="templates.length == 0" class="text-center text-muted">
+                  No templates available.
+                </div>
+              </div>
+              <div ng-if="templates">
+                <dir-pagination-controls></dir-pagination-controls>
+              </div>
+            </div>
 
-                  <!-- Basic Info -->
-                  <div class="form-group">
-                    <label for="field_image" class="col-sm-2 control-label text-left">
-                      Docker Image
-                    </label>
-                    <div class="col-sm-10">
-                      <div class="input-group">
-                        <input type="text"
-                               id="field_image"
-                               class="form-control"
-                               value="{{ state.selectedTemplate.Image }}"
-                               readonly>
-                        <span class="input-group-addon">
+            <div ng-if="state.selectedTemplate">
+              <form class="form-horizontal margin-top">
+                <div class="row">
+                  <div class="col-md-11">
+
+                    <!-- Basic Info -->
+                    <div class="form-group">
+                      <label for="field_image" class="col-sm-2 control-label text-left">
+                        Docker Image
+                      </label>
+                      <div class="col-sm-6">
+                        <div class="input-group">
+                          <input type="text"
+                                 id="field_image"
+                                 class="form-control"
+                                 value="{{ state.selectedTemplate.Image }}"
+                                 readonly>
+                          <span class="input-group-addon">
                           <div class="dropdown">
                             <span style="cursor: pointer;"
                                   class="dropdown-toggle"
@@ -250,18 +222,51 @@
                             </ul>
                           </div>
                         </span>
+                        </div>
+                      </div>
+                      <label for="field_network" class="col-sm-1 control-label text-left">
+                        Network
+                      </label>
+                      <div class="col-sm-3">
+                        <div class="input-group">
+                          <div class="input-group-addon">
+                            <div class="dropdown">
+                          <span href=""
+                                style="cursor: pointer;"
+                                class="dropdown-toggle"
+                                data-toggle="dropdown">
+                            <i class="fa fa-sitemap"></i>
+                            <span class="caret"></span>
+                          </span>
+                              <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
+                                <li ng-if="!availableNetworks.length"
+                                    class="disabled"
+                                    ng-disabled="true">
+                                  <a ng-disabled="true"><i class="fa fa-question"></i> No networks</a>
+                                </li>
+                                <li ng-repeat="net in availableNetworks">
+                                  <a ng-click="formValues.network = net"><i class="fa fa-sitemap"></i> {{ net.Name
+                                    }}</a>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                          <input id="field_network"
+                                 class="form-control"
+                                 ng-model="formValues.network.Name"
+                                 readonly>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="form-group" ng-if="!state.showAdvancedOptions">
-                    <label for="field_name" class="col-sm-2 control-label text-left">
-                      Instance Binding
-                    </label>
-                    <div class="col-sm-10">
+                    <div class="form-group" ng-if="!state.showAdvancedOptions">
+                      <label for="field_name" class="col-sm-2 control-label text-left">
+                        Instance Binding
+                      </label>
+                      <div class="col-sm-10">
 
-                      <div class="input-group">
-                        <div class="input-group-addon">
-                          <div class="dropdown">
+                        <div class="input-group">
+                          <div class="input-group-addon">
+                            <div class="dropdown">
                             <span style="cursor: pointer;"
                                   class="dropdown-toggle"
                                   data-toggle="dropdown">
@@ -269,38 +274,38 @@
                                 class="{{ formValues.bindings.length > 1 ? 'fa fa-cubes' : (formValues.bindings.length < 1 ? 'fa fa-cube' : formValues.bindings[0].icon) }}"></i>
                               <span class="caret"></span>
                             </span>
-                            <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
-                              <li>
-                                <a ng-click="clearPortBindings()"><i class="fa fa-cube"></i> Container</a>
-                              </li>
-                              <li class="divider"></li>
-                              <li ng-repeat="binding in bindTypes"
-                                  ng-class="{ 'disabled': formValues.bindings.length > 1 }">
-                                <a ng-click="setPortBinding(binding, null)">
-                                  <i class="{{ binding.icon }}"></i> {{ binding.label }}
-                                </a>
-                              </li>
-                              <li class="divider"></li>
-                              <li>
-                                <a ng-click="state.showAdvancedOptions = true;">
-                                  <i class="fa fa-cubes"></i> Advanced
-                                </a>
-                              </li>
-                            </ul>
+                              <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
+                                <li>
+                                  <a ng-click="clearPortBindings()"><i class="fa fa-cube"></i> Container</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li ng-repeat="binding in bindTypes"
+                                    ng-class="{ 'disabled': formValues.bindings.length > 1 }">
+                                  <a ng-click="setPortBinding(binding, null)">
+                                    <i class="{{ binding.icon }}"></i> {{ binding.label }}
+                                  </a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                  <a ng-click="state.showAdvancedOptions = true;">
+                                    <i class="fa fa-cubes"></i> Advanced
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
                           </div>
-                        </div>
-                        <div class="input-group-addon" ng-if="formValues.bindings.length === 1">
-                          {{ formValues.bindings[0].type !== 'app' ? '/' + formValues.bindings[0].type + '/' : '/' }}
-                        </div>
-                        <div class="input-group-addon" ng-if="formValues.bindings.length > 1">
+                          <div class="input-group-addon" ng-if="formValues.bindings.length === 1">
+                            {{ formValues.bindings[0].type !== 'app' ? '/' + formValues.bindings[0].type + '/' : '/' }}
+                          </div>
+                          <div class="input-group-addon" ng-if="formValues.bindings.length > 1">
                   <span style="cursor: pointer;"
                         ng-click="state.showAdvancedOptions = true;">
                     <i class="fa fa-wrench"></i>
                   </span>
-                        </div>
-                        <span ng-switch="formValues.bindings.length"
-                              uib-tooltip="{{ state.selectedTemplate.Image }}"
-                              tooltip-placement="top">
+                          </div>
+                          <span ng-switch="formValues.bindings.length"
+                                uib-tooltip="{{ state.selectedTemplate.Image }}"
+                                tooltip-placement="top">
                           <input ng-switch-when="0"
                                  type="text"
                                  id="field_name"
@@ -321,58 +326,58 @@
                                  placeholder="Multiple ports mapped"
                                  readonly>
                         </span>
+                        </div>
+
                       </div>
-
                     </div>
-                  </div>
 
-                  <!-- Extended Info -->
-                  <div class="form-group" ng-if="state.showAdvancedOptions">
-                    <label class="col-sm-2 control-label text-left">
-                      Port mappings
-                    </label>
-                    <div class="col-sm-10 form-inline">
+                    <!-- Extended Info -->
+                    <div class="form-group" ng-if="state.showAdvancedOptions">
+                      <label class="col-sm-2 control-label text-left">
+                        Port mappings
+                      </label>
+                      <div class="col-sm-10 form-inline">
 
-                      <div style="margin-top: 2px;"
-                           class="input-group col-sm-4 input-group-sm"
-                           ng-if="!state.selectedTemplate.Ports.length">
+                        <div style="margin-top: 2px;"
+                             class="input-group col-sm-4 input-group-sm"
+                             ng-if="!state.selectedTemplate.Ports.length">
 
-                        <div style="width: 50px" class="input-group-addon">
-                          <div class="dropdown disabled">
+                          <div style="width: 50px" class="input-group-addon">
+                            <div class="dropdown disabled">
                     <span class="dropdown-toggle" data-toggle="dropdown">
                       <i class="fa fa-sitemap"></i>
                       <span class="caret"></span>
                     </span>
+                            </div>
                           </div>
+
+                          <input type="text"
+                                 class="form-control"
+                                 placeholder="No port mappings defined yet."
+                                 readonly>
+
+                          <div style="width: 34px" class="input-group-addon">
+                            <div class="dropdown disabled">
+                            <span class="dropdown-toggle"
+                                  ng-click="addPortBinding()"
+                                  data-toggle="dropdown">
+                              <i class="fa fa-plus-circle"></i>
+                              Add
+                            </span>
+                            </div>
+                          </div>
+
                         </div>
 
-                        <input type="text"
-                               class="form-control"
-                               placeholder="No port mappings defined yet."
-                               readonly>
 
-                        <div style="width: 34px" class="input-group-addon">
-                          <div class="dropdown disabled">
-                    <span class="dropdown-toggle"
-                          ng-click="addPortBinding()"
-                          data-toggle="dropdown">
-                      <i class="fa fa-plus-circle"></i>
-                      Add
-                    </span>
-                          </div>
-                        </div>
+                        <div style="margin-top: 2px;"
+                             ng-repeat="portBinding in state.selectedTemplate.Ports">
 
-                      </div>
-
-
-                      <div style="margin-top: 2px;"
-                           ng-repeat="portBinding in state.selectedTemplate.Ports">
-
-                        <!-- host-port -->
-                        <div class="input-group col-sm-4 input-group-sm">
-                          <div style="width: 50px"
-                               class="input-group-addon">
-                            <div class="dropdown">
+                          <!-- host-port -->
+                          <div class="input-group col-sm-4 input-group-sm">
+                            <div style="width: 50px"
+                                 class="input-group-addon">
+                              <div class="dropdown">
                     <span style="cursor: pointer;"
                           class="dropdown-toggle"
                           ng-class="{ 'disabled' : !portBinding.containerPort }"
@@ -380,115 +385,115 @@
                       <i class="{{ !portBinding.binding ? 'fa fa-sitemap' : portBinding.binding.icon }}"></i>
                       <span class="caret"></span>
                     </span>
-                              <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
-                                <li>
-                                  <a ng-click="setPortBinding(null, portBinding.containerPort)"><i
-                                    class="fa fa-sitemap"></i>
-                                    Auto assign</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li ng-repeat="binding in bindTypes">
-                                  <a ng-click="setPortBinding(binding, portBinding.containerPort)">
-                                    <i class="{{ binding.icon }}"></i> {{ binding.label }}
-                                  </a>
-                                </li>
-                              </ul>
+                                <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
+                                  <li>
+                                    <a ng-click="setPortBinding(null, portBinding.containerPort)"><i
+                                      class="fa fa-sitemap"></i>
+                                      Auto assign</a>
+                                  </li>
+                                  <li class="divider"></li>
+                                  <li ng-repeat="binding in bindTypes">
+                                    <a ng-click="setPortBinding(binding, portBinding.containerPort)">
+                                      <i class="{{ binding.icon }}"></i> {{ binding.label }}
+                                    </a>
+                                  </li>
+                                </ul>
+                              </div>
                             </div>
-                          </div>
-                          <div style="padding: 0"
-                               class="input-group-addon"
-                               ng-if="portBinding.binding">
-                            {{ portBinding.binding.type !== 'app' ? '/' + portBinding.binding.type + '/' : '/' }}
-                          </div>
-                          <input type="text"
-                                 class="form-control"
-                                 ng-if="!portBinding.binding"
-                                 ng-disabled="!portBinding.containerPort"
-                                 ng-class="{ 'alert alert-info no-padding' : portBinding.hostPort }"
-                                 ng-focus="portBinding.active = true"
-                                 ng-blur="portBinding.active = false"
-                                 ng-model="portBinding.hostPort"
-                                 placeholder="{{ portBinding.active ? 'e.g. 80 or 1.2.3.4:80' : 'Auto assign port number'}}">
-                          <input type="text"
-                                 class="form-control"
-                                 ng-if="portBinding.binding"
-                                 ng-disabled="!portBinding.containerPort"
-                                 ng-class="{ 'alert alert-info no-padding' : portBinding.binding.name }"
-                                 ng-model="portBinding.binding.name"
-                                 ng-change="updateTags()"
-                                 placeholder="{{ state.imageParts.name }}">
+                            <div style="padding: 0"
+                                 class="input-group-addon"
+                                 ng-if="portBinding.binding">
+                              {{ portBinding.binding.type !== 'app' ? '/' + portBinding.binding.type + '/' : '/' }}
+                            </div>
+                            <input type="text"
+                                   class="form-control"
+                                   ng-if="!portBinding.binding"
+                                   ng-disabled="!portBinding.containerPort"
+                                   ng-class="{ 'alert alert-info no-padding' : portBinding.hostPort }"
+                                   ng-focus="portBinding.active = true"
+                                   ng-blur="portBinding.active = false"
+                                   ng-model="portBinding.hostPort"
+                                   placeholder="{{ portBinding.active ? 'e.g. 80 or 1.2.3.4:80' : 'Auto assign port number'}}">
+                            <input type="text"
+                                   class="form-control"
+                                   ng-if="portBinding.binding"
+                                   ng-disabled="!portBinding.containerPort"
+                                   ng-class="{ 'alert alert-info no-padding' : portBinding.binding.name }"
+                                   ng-model="portBinding.binding.name"
+                                   ng-change="updateTags()"
+                                   placeholder="{{ state.imageParts.name }}">
 
-                        </div>
-                        <!-- !host-port -->
-                        <span style="margin: 0 10px 0 10px;">
+                          </div>
+                          <!-- !host-port -->
+                          <span style="margin: 0 10px 0 10px;">
                       <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
                     </span>
-                        <!-- container-port -->
-                        <div class="input-group col-sm-4 input-group-sm">
+                          <!-- container-port -->
+                          <div class="input-group col-sm-4 input-group-sm">
                   <span style="width: 100px"
                         class="input-group-addon"
                         ng-class="{ 'has-error' : !portBinding.containerPort }">
                     container
                   </span>
-                          <input type="text" class="form-control" ng-model="portBinding.containerPort"
-                                 placeholder="e.g. 80">
-                        </div>
-                        <!-- !container-port -->
-                        <!-- protocol-actions -->
-                        <div class="input-group col-sm-3 input-group-sm">
-                          <div class="btn-group btn-group-sm">
-                            <label class="btn btn-default" ng-model="portBinding.protocol" uib-btn-radio="'tcp'"
-                                   ng-click="volume.name = ''">TCP</label>
-                            <label class="btn btn-default" ng-model="portBinding.protocol" uib-btn-radio="'udp'"
-                                   ng-click="volume.name = ''">UDP</label>
+                            <input type="text" class="form-control" ng-model="portBinding.containerPort"
+                                   placeholder="e.g. 80">
                           </div>
-                          <button class="btn btn-sm btn-danger" type="button" ng-click="removePortBinding($index)">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                          </button>
+                          <!-- !container-port -->
+                          <!-- protocol-actions -->
+                          <div class="input-group col-sm-3 input-group-sm">
+                            <div class="btn-group btn-group-sm">
+                              <label class="btn btn-default" ng-model="portBinding.protocol" uib-btn-radio="'tcp'"
+                                     ng-click="volume.name = ''">TCP</label>
+                              <label class="btn btn-default" ng-model="portBinding.protocol" uib-btn-radio="'udp'"
+                                     ng-click="volume.name = ''">UDP</label>
+                            </div>
+                            <button class="btn btn-sm btn-danger" type="button" ng-click="removePortBinding($index)">
+                              <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>
+                          </div>
+                          <!-- !protocol-actions -->
                         </div>
-                        <!-- !protocol-actions -->
                       </div>
                     </div>
-                  </div>
-                  <div class="form-group" ng-if="state.showAdvancedOptions">
-                    <label class="col-sm-2 control-label text-left">
-                      Volume mappings
-                    </label>
-                    <div class="col-sm-10 form-inline">
+                    <div class="form-group" ng-if="state.showAdvancedOptions">
+                      <label class="col-sm-2 control-label text-left">
+                        Volume mappings
+                      </label>
+                      <div class="col-sm-10 form-inline">
 
-                      <div style="margin-top: 2px;"
-                           class="input-group col-sm-4 input-group-sm"
-                           ng-if="!state.selectedTemplate.Volumes.length">
+                        <div style="margin-top: 2px;"
+                             class="input-group col-sm-4 input-group-sm"
+                             ng-if="!state.selectedTemplate.Volumes.length">
 
-                        <div style="width: 50px" class="input-group-addon">
-                          <div class="dropdown disabled">
+                          <div style="width: 50px" class="input-group-addon">
+                            <div class="dropdown disabled">
                     <span class="dropdown-toggle" data-toggle="dropdown">
                       <i class="fa fa-hdd-o"></i>
                       <span class="caret"></span>
                     </span>
+                            </div>
                           </div>
-                        </div>
 
-                        <input type="text"
-                               class="form-control"
-                               placeholder="No volume mappings defined yet."
-                               readonly>
+                          <input type="text"
+                                 class="form-control"
+                                 placeholder="No volume mappings defined yet."
+                                 readonly>
 
-                        <div style="width: 34px" class="input-group-addon">
-                          <div class="dropdown disabled">
+                          <div style="width: 34px" class="input-group-addon">
+                            <div class="dropdown disabled">
                     <span class="dropdown-toggle"
                           ng-click="addVolume()"
                           data-toggle="dropdown">
                       <i class="fa fa-plus-circle"></i>
                       Add
                     </span>
+                            </div>
                           </div>
+
                         </div>
 
-                      </div>
-
-                      <div style="margin-top: 2px;"
-                           ng-repeat="volume in state.selectedTemplate.Volumes">
+                        <div style="margin-top: 2px;"
+                             ng-repeat="volume in state.selectedTemplate.Volumes">
 
                 <span ng-switch="volume.type">
                   <div ng-switch-default class="input-group input-group-sm col-sm-4">
@@ -562,256 +567,84 @@
                   </div>
                 </span>
 
-                        <span style="margin: 0 10px 0 10px;">
+                          <span style="margin: 0 10px 0 10px;">
                   <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
                 </span>
 
-                        <div class="input-group col-sm-4 input-group-sm">
+                          <div class="input-group col-sm-4 input-group-sm">
                   <span class="input-group-addon"
                         style="width: 100px">
                     container
                   </span>
-                          <input type="text"
-                                 class="form-control"
-                                 ng-model="volume.containerPath"
-                                 placeholder="e.g. /path/in/container">
-                        </div>
-
-                        <div class="input-group col-sm-3 input-group-sm">
-                          <div class="btn-group btn-group-sm">
-                            <label class="btn btn-primary" ng-model="volume.type" uib-btn-radio="'auto'"
-                                   ng-click="volume.name = ''">Auto</label>
-                            <label class="btn btn-primary" ng-model="volume.type" uib-btn-radio="'volume'"
-                                   ng-click="volume.name = ''">Volume</label>
-                            <label class="btn btn-primary" ng-model="volume.type" uib-btn-radio="'bind'"
-                                   ng-click="volume.name = ''">Bind</label>
+                            <input type="text"
+                                   class="form-control"
+                                   ng-model="volume.containerPath"
+                                   placeholder="e.g. /path/in/container">
                           </div>
-                          <button class="btn btn-sm btn-danger" type="button" ng-click="removeVolume($index)">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                          </button>
-                        </div>
 
+                          <div class="input-group col-sm-3 input-group-sm">
+                            <div class="btn-group btn-group-sm">
+                              <label class="btn btn-primary" ng-model="volume.type" uib-btn-radio="'auto'"
+                                     ng-click="volume.name = ''">Auto</label>
+                              <label class="btn btn-primary" ng-model="volume.type" uib-btn-radio="'volume'"
+                                     ng-click="volume.name = ''">Volume</label>
+                              <label class="btn btn-primary" ng-model="volume.type" uib-btn-radio="'bind'"
+                                     ng-click="volume.name = ''">Bind</label>
+                            </div>
+                            <button class="btn btn-sm btn-danger" type="button" ng-click="removeVolume($index)">
+                              <i class="fa fa-trash" aria-hidden="true"></i>
+                            </button>
+                          </div>
+
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div class="form-group" ng-if="state.showAdvancedOptions">
-                    <label for="field_tags" class="col-sm-2 control-label text-left">
-                      Component Tags
-                    </label>
-                    <div class="col-sm-10">
+                    <div class="form-group" ng-if="state.showAdvancedOptions">
+                      <label for="field_tags" class="col-sm-2 control-label text-left">
+                        Component Tags
+                      </label>
+                      <div class="col-sm-10">
                       <textarea rows="3"
                                 type="text"
                                 id="field_tags"
                                 class="form-control"
                                 ng-model="state.selectedTemplate.tags">
                       </textarea>
-                    </div>
-                  </div>
-
-                  <!-- Environment Variable -->
-                  <div class="form-group"
-                       ng-repeat="var in state.selectedTemplate.Env"
-                       ng-if="!var.set && ['SERVICE_NAME', 'SERVICE_TAGS'].indexOf(var.name) < 0">
-                    <label for="field_{{ $index }}" class="col-sm-2 control-label text-left">{{ var.label }}</label>
-                    <div class="col-sm-10">
-                      <select
-                        ng-if="applicationState.endpoint.mode.provider !== 'DOCKER_SWARM' && var.type === 'container'"
-                        ng-options="container|containername for container in runningContainers" class="form-control"
-                        ng-model="var.value">
-                        <option selected disabled hidden value="">Select a container</option>
-                      </select>
-                      <select
-                        ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM' && var.type === 'container'"
-                        ng-options="container|swarmcontainername for container in runningContainers"
-                        class="form-control"
-                        ng-model="var.value">
-                        <option selected disabled hidden value="">Select a container</option>
-                      </select>
-                      <input ng-if="!var.type || !var.type === 'container'" type="text" class="form-control"
-                             ng-model="var.value" id="field_{{ $index }}">
-                    </div>
-                  </div>
-
-                </div>
-                <div class="col-md-1 center">
-                  <img class="thumbnail-logo" ng-src="{{ state.selectedTemplate.Logo }}">
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </rd-widget-body>
-    </rd-widget>
-  </div>
-</div>
-
-<div class="row compact" ng-if="!state.selectedTemplate">
-  <div class="col-lg-12 col-md-12 col-xs-12">
-    <rd-widget>
-      <rd-widget-header icon="fa-rocket" title="Application Templates">
-        <div class="pull-right">
-          <span>
-            Items per page:
-            <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
-              <option value="0">All</option>
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-            &nbsp;
-          </span>
-          <span>
-            <a class="btn btn-primary btn-sm"
-               ng-disabled="!importTemplates"
-               ng-click="importTemplates()">
-              Import Templates
-            </a>
-          </span>
-        </div>
-      </rd-widget-header>
-      <rd-widget-body classes="no-padding">
-        <div class="row row-same-height no-padding">
-
-          <div ng-if="catalogs.length"
-               class="col-same-height trim-bottom trim-sides side-menu"
-               ng-class="{ 'col-sm-2 col-xs-1': catalogs.length }">
-
-
-            <nav class="navbar navbar-default" role="navigation">
-              <!-- Brand and toggle get grouped for better mobile display -->
-              <div class="navbar-header">
-                <div class="brand-wrapper">
-                  <!-- Hamburger -->
-                  <button type="button" class="navbar-toggle">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                  </button>
-
-                  <!-- Brand -->
-                  <div class="brand-name-wrapper">
-                    <a class="navbar-brand" href="">
-                      Browse Catalogs
-                    </a>
-                  </div>
-
-                  <!-- Search -->
-                  <a data-toggle="collapse" href="#search" class="btn btn-default" id="search-trigger">
-                    <span class="glyphicon glyphicon-search"></span>
-                  </a>
-
-                  <!-- Search body -->
-                  <div id="search" class="panel-collapse collapse">
-                    <div class="panel-body">
-                      <form class="navbar-form" role="search">
-                        <div class="form-group">
-                          <input type="text" class="form-control" placeholder="Search">
-                        </div>
-                        <button type="submit" class="btn btn-default "><span class="glyphicon glyphicon-ok"></span>
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              <!-- Main Menu -->
-              <div class="side-menu-container">
-                <ul class="nav navbar-nav">
-
-                  <li><a href=""><span class="glyphicon glyphicon-send"></span> Link</a></li>
-                  <li class="active"><a href=""><span class="glyphicon glyphicon-plane"></span> Active Link</a></li>
-                  <li><a href=""><span class="glyphicon glyphicon-cloud"></span> Link</a></li>
-
-                  <!-- Dropdown-->
-                  <li class="panel panel-default" id="dropdown">
-                    <a data-toggle="collapse" href="#dropdown-lvl1">
-                      <span class="glyphicon glyphicon-user"></span> Sub Level <span class="caret"></span>
-                    </a>
-
-                    <!-- Dropdown level 1 -->
-                    <div id="dropdown-lvl1" class="panel-collapse collapse">
-                      <div class="panel-body">
-                        <ul class="nav navbar-nav">
-                          <li><a href="">Link</a></li>
-                          <li><a href="">Link</a></li>
-                          <li><a href="">Link</a></li>
-
-                          <!-- Dropdown level 2 -->
-                          <li class="panel panel-default" id="dropdown">
-                            <a data-toggle="collapse" href="#dropdown-lvl2">
-                              <span class="glyphicon glyphicon-off"></span> Sub Level <span class="caret"></span>
-                            </a>
-                            <div id="dropdown-lvl2" class="panel-collapse collapse">
-                              <div class="panel-body">
-                                <ul class="nav navbar-nav">
-                                  <li><a href="">Link</a></li>
-                                  <li><a href="">Link</a></li>
-                                  <li><a href="">Link</a></li>
-                                </ul>
-                              </div>
-                            </div>
-                          </li>
-                        </ul>
                       </div>
                     </div>
-                  </li>
 
-                  <li><a href=""><span class="glyphicon glyphicon-signal"></span> Link</a></li>
+                    <!-- Environment Variable -->
+                    <div class="form-group"
+                         ng-repeat="var in state.selectedTemplate.Env"
+                         ng-if="!var.set && ['SERVICE_NAME', 'SERVICE_TAGS'].indexOf(var.name) < 0">
+                      <label for="field_{{ $index }}" class="col-sm-2 control-label text-left">{{ var.label }}</label>
+                      <div class="col-sm-10">
+                        <select
+                          ng-if="applicationState.endpoint.mode.provider !== 'DOCKER_SWARM' && var.type === 'container'"
+                          ng-options="container|containername for container in runningContainers" class="form-control"
+                          ng-model="var.value">
+                          <option selected disabled hidden value="">Select a container</option>
+                        </select>
+                        <select
+                          ng-if="applicationState.endpoint.mode.provider === 'DOCKER_SWARM' && var.type === 'container'"
+                          ng-options="container|swarmcontainername for container in runningContainers"
+                          class="form-control"
+                          ng-model="var.value">
+                          <option selected disabled hidden value="">Select a container</option>
+                        </select>
+                        <input ng-if="!var.type || !var.type === 'container'" type="text" class="form-control"
+                               ng-model="var.value" id="field_{{ $index }}">
+                      </div>
+                    </div>
 
-                </ul>
-              </div><!-- /.navbar-collapse -->
-            </nav>
-            <script>
-              $(function () {
-                $('.navbar-toggle').click(function () {
-                  $('.navbar-nav').toggleClass('slide-in');
-                  $('.side-body').toggleClass('body-slide-in');
-                  $('#search').removeClass('in').addClass('collapse').slideUp(200);
-
-                  /// uncomment code for absolute positioning tweek see top comment in css
-                  //$('.absolute-wrapper').toggleClass('slide-in');
-
-                });
-
-                // Remove menu for searching
-                $('#search-trigger').click(function () {
-                  $('.navbar-nav').removeClass('slide-in');
-                  $('.side-body').removeClass('body-slide-in');
-
-                  /// uncomment code for absolute positioning tweek see top comment in css
-                  //$('.absolute-wrapper').removeClass('slide-in');
-
-                });
-              });
-            </script>
-
-
-          </div>
-
-          <div class="col-same-height padding trim-bottom"
-               ng-class="{ 'col-md-10 col-sm-10 col-xs-11': catalogs.length, 'col-md-12 col-sm-12 col-xs-12': !catalogs.length }">
-            <div class="template-list">
-              <div dir-paginate="tpl in templates | itemsPerPage: state.pagination_count"
-                   class="container-template hvr-underline-from-center" id="template_{{ tpl.index }}"
-                   ng-click="selectTemplate(tpl.index)">
-                <img class="logo" ng-src="{{ tpl.Logo }}"/>
-                <div class="title">{{ tpl.Title }}</div>
-                <div class="description">{{ tpl.Description }}</div>
-              </div>
-              <div ng-if="!templates" class="no-info-big">
-                Loading...
-              </div>
-              <div ng-if="templates.length == 0" class="text-center text-muted">
-                No templates available.
-              </div>
+                  </div>
+                  <div class="col-md-1 center">
+                    <img class="thumbnail-logo" ng-src="{{ state.selectedTemplate.Logo }}">
+                  </div>
+                </div>
+              </form>
             </div>
-            <div ng-if="templates">
-              <dir-pagination-controls></dir-pagination-controls>
-            </div>
+
           </div>
         </div>
       </rd-widget-body>

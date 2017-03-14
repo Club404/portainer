@@ -5,7 +5,7 @@ angular.module('portainer.services')
 
     service.getCatalog = function () {
       var deferred = $q.defer();
-      deferred.resolve([ {} ]);
+      deferred.resolve([{}]);
       /*
       Catalogs
         .get()

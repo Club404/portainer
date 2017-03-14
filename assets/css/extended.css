@@ -56,3 +56,24 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
 .gray-background {
   background-color: #f3f3f3;
 }
+
+.compose-drop-panel {
+  position: relative;
+  min-height: 280px;
+}
+
+.compose-drop-panel:before {
+  content: ' ';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  opacity: 0.05;
+  background-image: url('https://raw.githubusercontent.com/theodorosploumis/docker-presentation/gh-pages/img/docker_compose.png');
+  background-repeat: no-repeat;
+  background-position: 50% 0;
+  background-size: contain;
+}
