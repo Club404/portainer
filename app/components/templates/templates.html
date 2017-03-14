@@ -25,105 +25,14 @@
       </div>
     </div>
     <rd-widget>
-      <rd-widget-header icon="fa-plug" simple="true">
-        <div class="pull-left" role="group" aria-label="...">
-          <form class="form-inline col-lg-12 col-md-12 col-xs-12" style="padding: 0">
-            <div class="form-group"
-                 style="padding-right: 0px;">
-              <div style="cursor: pointer;"
-                   ng-click="state.selectedTemplate = null">
-                <i class="fa fa-arrow-left"></i>
-              </div>
-            </div>
-            <div class="form-group"
-                 style="padding-right: 0px;">
-              <img class="custom-header-ico" ng-src="{{ state.selectedTemplate.Logo }}">
+      <rd-widget-header icon="fa-rocket" title="Application Templates">
+        <div class="pull-right" role="group" aria-label="...">
+          <form class="form-inline col-lg-12 col-md-12 col-xs-12 trim-sides">
+            <div class="form-group">
+              <i id="createContainerSpinner" class="fa fa-cog fa-spin" style="margin-left: 5px; display: none;"></i>
             </div>
             <div class="form-group">
               <div class="input-group">
-
-                <div class="input-group-addon">
-                  <div class="dropdown">
-                    <span style="cursor: pointer;"
-                          class="dropdown-toggle"
-                          data-toggle="dropdown">
-                      <i
-                        class="{{ formValues.bindings.length > 1 ? 'fa fa-cubes' : (formValues.bindings.length < 1 ? 'fa fa-cube' : formValues.bindings[0].icon) }}"></i>
-                      <span class="caret"></span>
-                    </span>
-                    <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
-                      <li>
-                        <a ng-click="clearPortBindings()"><i class="fa fa-cube"></i> Container</a>
-                      </li>
-                      <li class="divider"></li>
-                      <li ng-repeat="binding in bindTypes" ng-class="{ 'disabled': formValues.bindings.length > 1 }">
-                        <a ng-click="setPortBinding(binding, null)">
-                          <i class="{{ binding.icon }}"></i> {{ binding.label }}
-                        </a>
-                      </li>
-                      <li class="divider"></li>
-                      <li>
-                        <a ng-click="state.showAdvancedOptions = true;">
-                          <i class="fa fa-cubes"></i> Custom
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-
-                <div class="input-group-addon" ng-if="formValues.bindings.length === 1">
-                  {{ formValues.bindings[0].type !== 'app' ? '/' + formValues.bindings[0].type + '/' : '/' }}
-                </div>
-                <div class="input-group-addon" ng-if="formValues.bindings.length > 1">
-                  <span style="cursor: pointer;"
-                        ng-click="state.showAdvancedOptions = true;">
-                    <i class="fa fa-wrench"></i>
-                  </span>
-                </div>
-
-                <span ng-switch="formValues.bindings.length"
-                      uib-tooltip="{{ state.selectedTemplate.Image }}"
-                      tooltip-placement="top">
-                  <input ng-switch-when="0"
-                         type="text"
-                         name="container_name"
-                         style="width: 250px"
-                         class="form-control input-sm"
-                         ng-class="{ 'alert alert-info no-padding' : formValues.name }"
-                         ng-model="formValues.name"
-                         placeholder="(optional)">
-                  <input ng-switch-when="1"
-                         name="bind_opts"
-                         style="width: 250px"
-                         class="form-control input-sm"
-                         ng-class="{ 'alert alert-info no-padding' : formValues.bindings[0].name }"
-                         ng-model="formValues.bindings[0].name"
-                         placeholder="{{ state.imageParts.name || 'service-group-name' }}">
-                  <input ng-switch-default=""
-                         style="width: 250px"
-                         class="form-control input-sm"
-                         ng-model="state.selectedTemplate.name"
-                         placeholder="Multiple ports mapped"
-                         readonly>
-                </span>
-
-                <span class="input-group-addon">
-                  <div class="dropdown">
-                    <span style="cursor: pointer;"
-                          class="dropdown-toggle"
-                          data-toggle="dropdown">
-                      <i class="fa fa-tag"></i>
-                      <span>{{ state.imageParts.tags || 'latest' }}</span>
-                      <span class="caret"></span>
-                    </span>
-                    <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
-                      <li class="disabled">
-                        <a><i class="fa fa-cube"></i> Browse...</a>
-                      </li>
-                    </ul>
-                  </div>
-                </span>
-
                 <div class="input-group-addon">
                   <div class="dropdown">
                     <span href=""
@@ -145,50 +54,38 @@
                     </ul>
                   </div>
                 </div>
+                <div class="btn-group btn-group-sm btn-default">
+                  <a class="btn btn-sm btn-default"
+                     ng-if="state.showAdvancedOptions"
+                     ng-click="addPortBinding()">
+                    <i class="fa fa-plus-circle space-right" aria-hidden="true"></i>
+                    Add port
+                  </a>
+                  <a class="btn btn-sm btn-default"
+                     ng-if="state.showAdvancedOptions"
+                     ng-click="addVolume()">
+                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                    Map Volume
+                  </a>
+                  <a class="btn btn-sm btn-default"
+                     ng-if="!state.showAdvancedOptions"
+                     ng-click="state.showAdvancedOptions = true;">
+                    <i class="fa fa-plus space-right" aria-hidden="true"></i>
+                    More options
+                  </a>
+                  <a class="btn btn-sm btn-default"
+                     ng-if="state.showAdvancedOptions"
+                     ng-click="state.showAdvancedOptions = false;">
+                    <i class="fa fa-minus space-right" aria-hidden="true"></i>
+                    Less options
+                  </a>
+                  <a class="btn btn-primary btn-sm"
+                     ng-disabled="!formValues.network"
+                     ng-click="createTemplate()">
+                    Create
+                  </a>
+                </div>
               </div>
-            </div>
-            <div class="form-group">
-              <i id="createContainerSpinner" class="fa fa-cog fa-spin" style="margin-left: 5px; display: none;"></i>
-            </div>
-          </form>
-        </div>
-        <div class="pull-right" role="group" aria-label="...">
-          <form class="form-inline col-lg-12 col-md-12 col-xs-12 trim-sides">
-            <div class="form-group">
-              <div class="btn-group btn-group-sm">
-                <a class="btn btn-sm btn-default"
-                   ng-if="state.showAdvancedOptions"
-                   ng-click="addPortBinding()">
-                  <i class="fa fa-plus-circle space-right" aria-hidden="true"></i>
-                  Add port
-                </a>
-                <a class="btn btn-sm btn-default"
-                   ng-if="state.showAdvancedOptions"
-                   ng-click="addVolume()">
-                  <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                  Map Volume
-                </a>
-                <a class="btn btn-sm btn-default"
-                   ng-if="!state.showAdvancedOptions"
-                   ng-click="state.showAdvancedOptions = true;">
-                  <i class="fa fa-plus space-right" aria-hidden="true"></i>
-                  More options
-                </a>
-                <a class="btn btn-sm btn-default"
-                   ng-if="state.showAdvancedOptions"
-                   ng-click="state.showAdvancedOptions = false;">
-                  <i class="fa fa-minus space-right" aria-hidden="true"></i>
-                  Less options
-                </a>
-              </div>
-            </div>
-            <div class="form-group">
-              <button type="button"
-                      class="btn btn-primary btn-sm"
-                      ng-disabled="!formValues.network"
-                      ng-click="createTemplate()">
-                Create
-              </button>
             </div>
           </form>
         </div>
@@ -216,7 +113,11 @@
                   <!-- Brand -->
                   <div class="brand-name-wrapper">
                     <a class="navbar-brand" href="">
-                      Browse Catalogs
+                      <img class="custom-header-ico pull-left"
+                           ng-src="{{ state.selectedTemplate.Logo }}">
+                      <span>
+                        Create Instance
+                      </span>
                     </a>
                   </div>
 
@@ -324,40 +225,108 @@
                   <!-- Basic Info -->
                   <div class="form-group">
                     <label for="field_image" class="col-sm-2 control-label text-left">
-                      Image source
+                      Docker Image
                     </label>
                     <div class="col-sm-10">
-                      <input type="text"
-                             id="field_image"
-                             class="form-control"
-                             value="{{ state.selectedTemplate.Image }}"
-                             readonly>
+                      <div class="input-group">
+                        <input type="text"
+                               id="field_image"
+                               class="form-control"
+                               value="{{ state.selectedTemplate.Image }}"
+                               readonly>
+                        <span class="input-group-addon">
+                          <div class="dropdown">
+                            <span style="cursor: pointer;"
+                                  class="dropdown-toggle"
+                                  data-toggle="dropdown">
+                              <i class="fa fa-tag"></i>
+                              <span>{{ state.imageParts.tags || 'latest' }}</span>
+                              <span class="caret"></span>
+                            </span>
+                            <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
+                              <li class="disabled">
+                                <a><i class="fa fa-cube"></i> Browse...</a>
+                              </li>
+                            </ul>
+                          </div>
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <div class="form-group">
+                  <div class="form-group" ng-if="!state.showAdvancedOptions">
                     <label for="field_name" class="col-sm-2 control-label text-left">
-                      Component name
+                      Instance Binding
                     </label>
                     <div class="col-sm-10">
-                      <input type="text"
-                             id="field_name"
-                             class="form-control"
-                             readonly>
+
+                      <div class="input-group">
+                        <div class="input-group-addon">
+                          <div class="dropdown">
+                            <span style="cursor: pointer;"
+                                  class="dropdown-toggle"
+                                  data-toggle="dropdown">
+                              <i
+                                class="{{ formValues.bindings.length > 1 ? 'fa fa-cubes' : (formValues.bindings.length < 1 ? 'fa fa-cube' : formValues.bindings[0].icon) }}"></i>
+                              <span class="caret"></span>
+                            </span>
+                            <ul class="dropdown-menu" style="margin-left: -13px; margin-top: 7px;">
+                              <li>
+                                <a ng-click="clearPortBindings()"><i class="fa fa-cube"></i> Container</a>
+                              </li>
+                              <li class="divider"></li>
+                              <li ng-repeat="binding in bindTypes"
+                                  ng-class="{ 'disabled': formValues.bindings.length > 1 }">
+                                <a ng-click="setPortBinding(binding, null)">
+                                  <i class="{{ binding.icon }}"></i> {{ binding.label }}
+                                </a>
+                              </li>
+                              <li class="divider"></li>
+                              <li>
+                                <a ng-click="state.showAdvancedOptions = true;">
+                                  <i class="fa fa-cubes"></i> Advanced
+                                </a>
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                        <div class="input-group-addon" ng-if="formValues.bindings.length === 1">
+                          {{ formValues.bindings[0].type !== 'app' ? '/' + formValues.bindings[0].type + '/' : '/' }}
+                        </div>
+                        <div class="input-group-addon" ng-if="formValues.bindings.length > 1">
+                  <span style="cursor: pointer;"
+                        ng-click="state.showAdvancedOptions = true;">
+                    <i class="fa fa-wrench"></i>
+                  </span>
+                        </div>
+                        <span ng-switch="formValues.bindings.length"
+                              uib-tooltip="{{ state.selectedTemplate.Image }}"
+                              tooltip-placement="top">
+                          <input ng-switch-when="0"
+                                 type="text"
+                                 id="field_name"
+                                 class="form-control"
+                                 ng-class="{ 'alert alert-info no-padding' : formValues.name }"
+                                 ng-model="formValues.name"
+                                 placeholder="(optional)">
+                          <input ng-switch-when="1"
+                                 id="field_name"
+                                 class="form-control"
+                                 ng-class="{ 'alert alert-info no-padding' : formValues.bindings[0].name }"
+                                 ng-model="formValues.bindings[0].name"
+                                 placeholder="{{ state.imageParts.name || 'service-group-name' }}">
+                          <input ng-switch-default=""
+                                 id="field_name"
+                                 class="form-control"
+                                 ng-model="state.selectedTemplate.name"
+                                 placeholder="Multiple ports mapped"
+                                 readonly>
+                        </span>
+                      </div>
+
                     </div>
                   </div>
 
                   <!-- Extended Info -->
-                  <div class="form-group" ng-if="state.showAdvancedOptions">
-                    <label for="field_tags" class="col-sm-2 control-label text-left">
-                      Component Tags
-                    </label>
-                    <div class="col-sm-10">
-                      <input type="text"
-                             id="field_tags"
-                             class="form-control"
-                             ng-model="state.selectedTemplate.tags">
-                    </div>
-                  </div>
                   <div class="form-group" ng-if="state.showAdvancedOptions">
                     <label class="col-sm-2 control-label text-left">
                       Port mappings
@@ -625,6 +594,19 @@
                       </div>
                     </div>
                   </div>
+                  <div class="form-group" ng-if="state.showAdvancedOptions">
+                    <label for="field_tags" class="col-sm-2 control-label text-left">
+                      Component Tags
+                    </label>
+                    <div class="col-sm-10">
+                      <textarea rows="3"
+                                type="text"
+                                id="field_tags"
+                                class="form-control"
+                                ng-model="state.selectedTemplate.tags">
+                      </textarea>
+                    </div>
+                  </div>
 
                   <!-- Environment Variable -->
                   <div class="form-group"
@@ -663,19 +645,29 @@
   </div>
 </div>
 
-<div class="row" ng-if="!state.selectedTemplate">
+<div class="row compact" ng-if="!state.selectedTemplate">
   <div class="col-lg-12 col-md-12 col-xs-12">
     <rd-widget>
       <rd-widget-header icon="fa-rocket" title="Application Templates">
         <div class="pull-right">
-          Items per page:
-          <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
-            <option value="0">All</option>
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
+          <span>
+            Items per page:
+            <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
+              <option value="0">All</option>
+              <option value="10">10</option>
+              <option value="25">25</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+            &nbsp;
+          </span>
+          <span>
+            <a class="btn btn-primary btn-sm"
+               ng-disabled="!importTemplates"
+               ng-click="importTemplates()">
+              Import Templates
+            </a>
+          </span>
         </div>
       </rd-widget-header>
       <rd-widget-body classes="no-padding">

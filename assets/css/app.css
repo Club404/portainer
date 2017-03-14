@@ -120,9 +120,9 @@ a[ng-click] {
 }
 
 .custom-header-ico {
-  max-width: 32px;
-  max-height: 32px;
-  margin-right: 2px;
+  max-width: 24px;
+  max-height: 24px;
+  margin-right: 10px;
 }
 
 .thumbnail-logo {
