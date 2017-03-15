@@ -119,18 +119,6 @@ a[ng-click] {
   flex-wrap: wrap;
 }
 
-.custom-header-ico {
-  max-width: 24px;
-  max-height: 24px;
-  margin-right: 10px;
-}
-
-.thumbnail-logo {
-  max-width: 128px;
-  max-height: 128px;
-  margin: 16px auto;
-}
-
 .btn-responsive {
   padding: 5px 10px;
   font-size: 12px;

@@ -13,67 +13,17 @@
   <div class="col-lg-12 col-md-12 col-xs-12">
     <rd-widget>
       <rd-widget-header icon="fa-rocket" title="Application Templates">
-        <div ng-if="!state.selectedTemplate" class="pull-right">
-          <span>
-            Items per page:
-            <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
-              <option value="0">All</option>
-              <option value="10">10</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-            &nbsp;
-          </span>
-          <span>
-            <a class="btn btn-primary btn-xs"
-               ng-disabled="!importTemplates"
-               ng-click="importTemplates()">
-              Import Templates
-            </a>
-          </span>
-        </div>
-        <div ng-if="state.selectedTemplate" class="pull-right" role="group" aria-label="...">
-          <form class="form-inline col-lg-12 col-md-12 col-xs-12 trim-sides">
-            <div class="form-group">
+        <div class="pull-right">
+          <div style="margin-top: -11px; margin-bottom: -11px; margin-right: -30px;"
+               class="btn-group btn-group-lg btn-default">
+            <a class="btn btn-primary"
+               style="border-radius: 0;"
+               ng-disabled="!state.selectedTemplate || !formValues.network"
+               ng-click="createTemplate()">
+              Deploy
               <i id="createContainerSpinner" class="fa fa-cog fa-spin" style="margin-left: 5px; display: none;"></i>
-            </div>
-            <div class="form-group">
-              <div class="input-group">
-                <div class="btn-group btn-group-xs btn-default">
-                  <a class="btn btn-xs btn-default"
-                     ng-if="state.showAdvancedOptions"
-                     ng-click="addPortBinding()">
-                    <i class="fa fa-plus-circle space-right" aria-hidden="true"></i>
-                    Add port
-                  </a>
-                  <a class="btn btn-xs btn-default"
-                     ng-if="state.showAdvancedOptions"
-                     ng-click="addVolume()">
-                    <i class="fa fa-plus-circle" aria-hidden="true"></i>
-                    Map Volume
-                  </a>
-                  <a class="btn btn-xs btn-default"
-                     ng-if="!state.showAdvancedOptions"
-                     ng-click="state.showAdvancedOptions = true;">
-                    <i class="fa fa-plus space-right" aria-hidden="true"></i>
-                    More options
-                  </a>
-                  <a class="btn btn-xs btn-default"
-                     ng-if="state.showAdvancedOptions"
-                     ng-click="state.showAdvancedOptions = false;">
-                    <i class="fa fa-minus space-right" aria-hidden="true"></i>
-                    Less options
-                  </a>
-                  <a class="btn btn-xs btn-primary"
-                     ng-disabled="!formValues.network"
-                     ng-click="createTemplate()">
-                    Create
-                  </a>
-                </div>
-              </div>
-            </div>
-          </form>
+            </a>
+          </div>
         </div>
       </rd-widget-header>
       <rd-widget-body classes="no-padding">
@@ -129,12 +79,11 @@
               </div>
 
               <!-- Default Catalog -->
-              <div class="side-menu-container">
+              <div class="side-menu-container" ng-if="!state.selectedTemplate">
                 <ul class="nav navbar-nav" style="width: 100%">
 
                   <!-- Menu Item -->
-                  <li id="dropdown"
-                      class="panel panel-default"
+                  <li class="panel panel-default dropdown"
                       ng-class="{ 'active': !state.selectedTemplate }">
                     <a data-toggle="collapse"
                        ng-click="nav.expanded.default = !nav.expanded.default"
@@ -145,7 +94,7 @@
 
                     <!-- Catalog Templates -->
                     <div class="panel-collapse"
-                         ng-class="{ 'collapse': state.selectedTemplate || !nav.expanded.default }">
+                         ng-class="{ 'collapse': !nav.expanded.default }">
                       <div class="panel-body">
                         <ul class="nav navbar-nav" style="width: 100%">
                           <li ng-repeat="template in templates"
@@ -165,10 +114,34 @@
             </nav>
 
           </div>
-          <div class="col-same-height padding trim-bottom"
+          <div class="col-same-height no-padding trim-bottom trim-sides"
                ng-class="{ 'col-md-10 col-sm-10 col-xs-11': catalogs.length, 'col-md-12 col-sm-12 col-xs-12': !catalogs.length }">
 
             <div ng-if="!state.selectedTemplate">
+              <nav class="navbar navbar-default" style="border-radius: 0; height: 50px;">
+                <div>
+                  <div class="navbar-header">
+                    <a class="navbar-brand">
+                      <img class="thumbnail-logo"
+                           ng-if="state.selectedTemplate.Logo"
+                           ng-src="{{ state.selectedTemplate.Logo }}">
+                      Default Templates
+                    </a>
+                  </div>
+                  <div class="pull-right" style="line-height: 50px; padding-right: 10px">
+                    <span>
+                      Items per page:
+                      <select ng-model="state.pagination_count" ng-change="changePaginationCount()">
+                        <option value="0">All</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                      </select>
+                    </span>
+                  </div>
+                </div>
+              </nav>
               <div class="template-list">
                 <div dir-paginate="tpl in templates | itemsPerPage: state.pagination_count"
                      class="container-template hvr-underline-from-center" id="template_{{ tpl.index }}"
@@ -190,6 +163,59 @@
             </div>
 
             <div ng-if="state.selectedTemplate">
+              <nav class="navbar navbar-default" style="border-radius: 0; height: 50px;">
+                <div>
+                  <div class="navbar-header">
+                    <a class="navbar-brand" ng-click="state.selectedTemplate = null">
+                      <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <a class="navbar-brand trim-sides">
+                      <img class="custom-header-ico pull-left"
+                           ng-if="state.selectedTemplate.Logo"
+                           ng-src="{{ state.selectedTemplate.Logo }}">
+                      {{ state.selectedTemplate.Title || 'Application Template' }}
+                    </a>
+                  </div>
+                  <div class="pull-right" style="line-height: 50px; padding-right: 10px">
+                    <form class="form-inline col-lg-12 col-md-12 col-xs-12 trim-sides">
+                      <div class="form-group">
+                        <div class="input-group">
+                          <div class="btn-group btn-group-md btn-default">
+                            <a class="btn btn-default"
+                               ng-if="state.showAdvancedOptions"
+                               ng-click="addPortBinding()">
+                              <i class="fa fa-plus-circle space-right" aria-hidden="true"></i>
+                              Add port
+                            </a>
+                            <a class="btn btn-default"
+                               ng-if="state.showAdvancedOptions"
+                               ng-click="addVolume()">
+                              <i class="fa fa-plus-circle" aria-hidden="true"></i>
+                              Map Volume
+                            </a>
+                            <a class="btn btn-default"
+                               ng-if="!state.showAdvancedOptions"
+                               ng-click="state.showAdvancedOptions = true;">
+                              <i class="fa fa-plus space-right" aria-hidden="true"></i>
+                              More options
+                            </a>
+                            <a class="btn btn-default"
+                               ng-if="state.showAdvancedOptions"
+                               ng-click="state.showAdvancedOptions = false;">
+                              <i class="fa fa-minus space-right" aria-hidden="true"></i>
+                              Less options
+                            </a>
+                            <a class="btn btn-danger"
+                               ng-click="state.selectedTemplate = null">
+                              <i class="fa fa-trash"></i>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </nav>
               <form class="form-horizontal margin-top">
                 <div class="row">
                   <div class="col-md-11">

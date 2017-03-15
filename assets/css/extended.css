@@ -77,3 +77,15 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
   background-position: 50% 0;
   background-size: contain;
 }
+
+.custom-header-ico {
+  max-width: 24px;
+  max-height: 24px;
+  margin-right: 10px;
+}
+
+.thumbnail-logo {
+  max-width: 128px;
+  max-height: 128px;
+  margin: 16px auto;
+}
