@@ -1,4 +1,18 @@
-@import 'sidebar.css';
+
+*[draggable=true] {
+  -moz-user-select: none;
+  -khtml-user-drag: element;
+  cursor: move;
+}
+
+.drop-target.over {
+  outline: dashed 1px #646464;
+  box-shadow: 0 0 3px 0 #0094ff;
+}
+
+.drag-item {
+  cursor: move;
+}
 
 #sidebar-wrapper {
   background: #2e3c42;

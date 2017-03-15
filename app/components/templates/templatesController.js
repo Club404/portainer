@@ -252,6 +252,10 @@ angular.module('templates', [])
           });
       };
 
+      $scope.attachTemplate = function (template) {
+        console.warn(' ~> ', template);
+      };
+
       var selectedItem = -1;
       $scope.selectTemplate = function (idx) {
         $('#template_' + idx).toggleClass("container-template--selected");

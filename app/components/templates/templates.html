@@ -64,8 +64,10 @@
                   <!-- Compose Files and contents -->
                   <div class="panel-collapse"
                        ng-class="{ 'collapse': !nav.expanded.compose }">
-                    <div class="panel-body compose-drop-panel">
-                      <div ng-if="!state.selectedTemplate" class="no-info-big">
+                    <div class="panel-body compose-drop-panel drop-target"
+                         drop-action="attachTemplate(data)">
+                      <div ng-if="!state.selectedTemplate"
+                           class="no-info-big">
                         <em>
                           Drag items here
                         </em>
@@ -89,7 +91,7 @@
                        ng-click="nav.expanded.default = !nav.expanded.default"
                        ng-class="{ 'dropdown': !nav.expanded.default, 'dropup': nav.expanded.default }">
                       <span class="fa fa-cubes"></span>
-                      Default Templates <span class="caret"></span>
+                      Featured Templates <span class="caret"></span>
                     </a>
 
                     <!-- Catalog Templates -->
@@ -97,7 +99,9 @@
                          ng-class="{ 'collapse': !nav.expanded.default }">
                       <div class="panel-body">
                         <ul class="nav navbar-nav" style="width: 100%">
-                          <li ng-repeat="template in templates"
+                          <li class="drag-item"
+                              drag-data="template"
+                              ng-repeat="template in templates"
                               ng-class="{ 'active': template.Title === state.selectedTemplate.Title}">
                             <a ng-click="selectTemplate(template.index)">
                               <img class="custom-header-ico pull-left" ng-src="{{ template.Logo }}">
@@ -125,7 +129,7 @@
                       <img class="thumbnail-logo"
                            ng-if="state.selectedTemplate.Logo"
                            ng-src="{{ state.selectedTemplate.Logo }}">
-                      Default Templates
+                      Featured Templates
                     </a>
                   </div>
                   <div class="pull-right" style="line-height: 50px; padding-right: 10px">
@@ -143,9 +147,11 @@
                 </div>
               </nav>
               <div class="template-list">
-                <div dir-paginate="tpl in templates | itemsPerPage: state.pagination_count"
-                     class="container-template hvr-underline-from-center" id="template_{{ tpl.index }}"
-                     ng-click="selectTemplate(tpl.index)">
+                <div id="template_{{ tpl.index }}"
+                     ng-click="selectTemplate(tpl.index)"
+                     dir-paginate="tpl in templates | itemsPerPage: state.pagination_count"
+                     class="container-template hvr-underline-from-center drag-item"
+                     drag-data="tpl">
                   <img class="logo" ng-src="{{ tpl.Logo }}"/>
                   <div class="title">{{ tpl.Title }}</div>
                   <div class="description">{{ tpl.Description }}</div>
