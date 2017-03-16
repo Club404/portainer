@@ -84,6 +84,21 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
   margin-right: 10px;
 }
 
+.tree-node-icon {
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  margin-right: 8px;
+}
+
+.tree-node-icon img {
+  max-width: 20px;
+  max-height: 20px;
+}
+
 .thumbnail-logo {
   max-width: 128px;
   max-height: 128px;
@@ -109,22 +124,33 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
 
 /* --- Tree --- */
 
+.tree-node-ico {
+  max-width: 16px;
+  max-height: 16px;
+  margin-right: 8px;
+}
+
 .angular-ui-tree {
 }
 
-.angular-ui-tree-handle:hover {
+.angular-ui-tree-node .on-focus {
+  opacity: 0.0;
+}
+.angular-ui-tree-node:hover .on-focus {
+  opacity: 0.15;
+}
+.angular-ui-tree-node:hover .on-focus:hover {
+  opacity: 1.0;
 }
 
 .angular-ui-tree-handle {
-  margin: 0;
-  padding: 3px 6px;
   color: #555555;
 }
 
 .angular-ui-tree-handle:hover {
   color: #000000;
-  background: rgba(133, 133, 133, 0.15);
-  outline: 1px solid rgba(152, 152, 152, 0.5);
+  background: rgba(133, 133, 133, 0.05);
+  outline: 1px solid rgba(152, 152, 152, 0.25);
 }
 
 .angular-ui-tree-placeholder {

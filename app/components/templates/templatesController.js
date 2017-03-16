@@ -253,38 +253,98 @@ angular.module('templates', [])
           });
       };
 
-      $scope.attachTemplate = function (template) {
-        console.warn(' ~> ', template);
-        $scope.$applyAsync(function () {
+      $scope.createContext = function (type, context, target) {
+        switch (type) {
+          case 'docker-compose':
+            console.warn('todo: select docker-compose');
+            break;
+          case 'template':
+            $scope.selectedTemplate = context;
+            break;
+          case 'network':
+            console.warn('todo: select template');
+            break;
+        }
+      }
 
-          // Locate the target compose file
-          var composeTarget = $scope.state.currentRecipe.length > 0 ? $scope.state.currentRecipe[0] : null;
-          if (!composeTarget) {
-            composeTarget = {
-              title: 'docker-compose.yml',
-              nodes: []
-            };
-            $scope.state.currentRecipe = [composeTarget];
-          }
+      $scope.selectContext = function (type, context) {
+        switch (type) {
+          case 'docker-compose':
+            console.warn('todo: select docker-compose');
+            break;
+          case 'template':
+            $scope.selectedTemplate = context;
+            break;
+          case 'network':
+            console.warn('todo: select template');
+            break;
+        }
+      };
 
-          // Append the new entry to the current compose file
-          if (composeTarget.nodes) {
-            composeTarget.nodes.push({
-              title: template.Title,
-              data: template,
-            });
-          }
+      $scope.createComposeNode = function (opts) {
+        var node = {
+          title: 'docker-compose.yml',
+          type: 'docker-compose',
+          nodes: []
+        };
+        angular.extend(node, {data: node}, opts);
+        return node;
+      };
 
+      $scope.createTemplateNode = function (template, opts) {
+        var node = {
+          icon: template.Logo,
+          title: template.Title,
+          type: 'template',
+          data: template,
+          nodes: []
+        };
+        angular.extend(node, opts);
+        return node;
+      };
+
+      $scope.findComposeNode = function (node) {
+        var results = $scope.state.currentRecipe.filter(function (composeNode) {
+          return composeNode.nodes && composeNode.nodes.indexOf(node) >= 0;
         });
+        return results.length ? results[0] : null;
+      };
+
+      $scope.attachTemplate = function (template, composeTarget, sibling) {
+        if (!composeTarget && sibling) {
+          composeTarget = $scope.findComposeNode(sibling);
+        }
+
+        // Locate or create the target compose file
+        if (!composeTarget) {
+          composeTarget = $scope.createComposeNode({
+            expanded: true
+          });
+          $scope.state.currentRecipe.push(composeTarget);
+        }
+
+        // Append the new entry to the current compose file
+        var node = $scope.createTemplateNode(template);
+        var index = sibling ? composeTarget.nodes.indexOf(sibling) : -1;
+        if (index < 0) {
+          composeTarget.nodes.push(node);
+        } else {
+          composeTarget.nodes.splice(index + 1, 0, node);
+        }
+
+        // Trigger digest
+        $scope.$applyAsync();
       };
 
       var selectedItem = -1;
       $scope.selectTemplate = function (idx) {
-        $('#template_' + idx).toggleClass("container-template--selected");
         if (selectedItem === idx) {
-          unselectTemplate();
-        } else {
+          idx = -1;
+        }
+        if (!isNaN(idx) && idx >= 0) {
           selectTemplate(idx);
+        } else {
+          unselectTemplate();
         }
       };
 
@@ -295,7 +355,6 @@ angular.module('templates', [])
       }
 
       function selectTemplate(idx) {
-        $('#template_' + selectedItem).toggleClass("container-template--selected");
         selectedItem = idx;
         var selectedTemplate = $scope.templates[idx];
         $scope.state.selectedTemplate = angular.copy(selectedTemplate);

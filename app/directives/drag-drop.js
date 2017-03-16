@@ -34,25 +34,32 @@ angular
         }
       }],
       link: function ($scope, element) {
+        var className = 'over';
         addEvent(element[0], 'dragover', function (e) {
           if (e.preventDefault) e.preventDefault(); // allows us to drop
           e.dataTransfer.dropEffect = 'copy';
-          element.toggleClass('over', true);
+          element.toggleClass(className, true);
           $scope.over();
           return false;
         });
         addEvent(element[0], 'dragenter', function (e) {
-          element.toggleClass('over', true); // to get IE to work
+          element.toggleClass(className, true); // to get IE to work
           $scope.enter();
           return false;
         });
         addEvent(element[0], 'dragleave', function () {
-          element.toggleClass('over', false);
+          element.toggleClass(className, false);
           $scope.leave();
         });
         addEvent(element[0], 'drop', function (e) {
           if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting...why???
-          element.toggleClass('over', false);
+          element.toggleClass(className, false);
+          var items = document.getElementsByClassName(className);
+          if (items && items.length) {
+            for (var i = 0; i < items.length; i++) {
+              angular.element(items[i]).toggleClass(className, false);
+            }
+          }
           var data = e.dataTransfer.getData('Text');
           $scope.drop(JSON.parse(data));
           return false;

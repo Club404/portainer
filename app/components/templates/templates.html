@@ -75,13 +75,64 @@
                       <div ng-if="state.currentRecipe.length">
                         <!-- Nested node template -->
                         <script type="text/ng-template" id="nodes_renderer.html">
-                          <div class="drop-target"
-                               drop-action="attachTemplate(data)">
-                            <div ui-tree-handle>
-                              <i class="fa fa-cube"></i>
-                              {{ node.title }}
+                          <div ng-switch="node.type">
+
+                            <div style="margin: 0px;"
+                                 class="pull-left on-focus"
+                                 ui-tree-handle>
+                              <i class="text-muted fa fa-ellipsis-v"
+                                 style="width: 10px; line-height: 20px;">
+                              </i>
                             </div>
+
+                            <div class="pull-left"
+                                 ng-click="node.expanded = !node.expanded; selectContext('template', node.data)">
+                              <i ng-if="!node.icon" class="tree-node-icon fa" ng-class="{ 'fa-minus': node.expanded, 'fa-plus': !node.expanded }"></i>
+                              <img ng-if="node.icon" class="tree-node-icon" ng-src="{{ node.icon }}">
+                            </div>
+
+                            <div ng-switch-default="">
+                              <label ng-click="selectContext('template', node.data)">
+                                {{ node.title }}
+                              </label>
+                              <div class="pull-right on-focus">
+                                <a class="text-muted"
+                                   ng-click="">
+                                  <i class="fa fa-trash"></i>
+                                </a>
+                              </div>
+                            </div>
+
+                            <div ng-switch-when="docker-compose"
+                                 drop-action="attachTemplate(data, node.data)"
+                                 class="drop-target">
+                              <label ng-click="selectContext('template', node.data)">
+                                {{ node.title }}
+                              </label>
+                              <div class="pull-right on-focus">
+                                <a class="text-muted"
+                                   ng-click="">
+                                  <i class="fa fa-trash"></i>
+                                </a>
+                              </div>
+                            </div>
+
+                            <div ng-switch-when="template"
+                                 drop-action="attachTemplate(data, null, node)"
+                                 class="drop-target">
+                              <label ng-click="selectContext('template', node.data)">
+                                {{ node.title }}
+                              </label>
+                              <div class="pull-right on-focus">
+                                <a class="text-muted"
+                                   ng-click="">
+                                  <i class="fa fa-trash"></i>
+                                </a>
+                              </div>
+                            </div>
+
                             <ol ui-tree-nodes=""
+                                ng-if="node.expanded"
                                 ng-model="node.nodes">
                               <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
                               </li>
@@ -123,7 +174,7 @@
                               drag-data="template"
                               ng-repeat="template in templates"
                               ng-class="{ 'active': template.Title === state.selectedTemplate.Title}">
-                            <a ng-click="selectTemplate(template.index)">
+                            <a ng-click="selectContext(template.index)">
                               <img class="custom-header-ico pull-left" ng-src="{{ template.Logo }}">
                               {{ template.Title || 'No Title' }}
                             </a>
@@ -169,8 +220,9 @@
               <div class="template-list">
                 <div id="template_{{ tpl.index }}"
                      ng-click="selectTemplate(tpl.index)"
-                     dir-paginate="tpl in templates | itemsPerPage: state.pagination_count"
+                     ng-class="{ 'container-template--selected': tpl === state.selectedTemplate }"
                      class="container-template hvr-underline-from-center drag-item"
+                     dir-paginate="tpl in templates | itemsPerPage: state.pagination_count"
                      drag-data="tpl">
                   <img class="logo" ng-src="{{ tpl.Logo }}"/>
                   <div class="title">{{ tpl.Title }}</div>
