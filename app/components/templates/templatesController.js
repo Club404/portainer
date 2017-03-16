@@ -3,6 +3,7 @@ angular.module('templates', [])
     function ($scope, $q, $state, $anchorScroll, Config, ContainerService, ContainerHelper, ImageService, NetworkService, TemplateService, TemplateHelper, VolumeService, Messages, Pagination) {
       $scope.state = {
         imageParts: {},
+        currentRecipe: [],
         selectedTemplate: null,
         showAdvancedOptions: false,
         pagination_count: Pagination.getPaginationCount('templates')
@@ -254,6 +255,27 @@ angular.module('templates', [])
 
       $scope.attachTemplate = function (template) {
         console.warn(' ~> ', template);
+        $scope.$applyAsync(function () {
+
+          // Locate the target compose file
+          var composeTarget = $scope.state.currentRecipe.length > 0 ? $scope.state.currentRecipe[0] : null;
+          if (!composeTarget) {
+            composeTarget = {
+              title: 'docker-compose.yml',
+              nodes: []
+            };
+            $scope.state.currentRecipe = [composeTarget];
+          }
+
+          // Append the new entry to the current compose file
+          if (composeTarget.nodes) {
+            composeTarget.nodes.push({
+              title: template.Title,
+              data: template,
+            });
+          }
+
+        });
       };
 
       var selectedItem = -1;

@@ -140,6 +140,7 @@ module.exports = function (grunt) {
         'bower_components/moment/min/moment.min.js',
         'bower_components/xterm.js/dist/xterm.js',
         'bower_components/bootbox.js/bootbox.js',
+        'bower_components/angular-ui-tree/dist/angular-ui-tree.js',
         'assets/js/jquery.gritter.js', // Using custom version to fix error in minified build due to "use strict"
         'assets/js/legend.js' // Not a bower package
       ],
@@ -156,6 +157,7 @@ module.exports = function (grunt) {
         'bower_components/font-awesome/css/font-awesome.min.css',
         'bower_components/rdash-ui/dist/css/rdash.min.css',
         'bower_components/angular-ui-select/dist/select.min.css',
+        'bower_components/angular-ui-tree/dist/angular-ui-tree.min.css',
         'bower_components/xterm.js/dist/xterm.css'
       ]
     },

@@ -6,6 +6,7 @@ angular.module('portainer', [
   'ui.bootstrap',
   'ui.router',
   'ui.select',
+  'ui.tree',
   'ngCookies',
   'ngSanitize',
   'ngFileUpload',

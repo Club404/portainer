@@ -1,19 +1,4 @@
 
-*[draggable=true] {
-  -moz-user-select: none;
-  -khtml-user-drag: element;
-  cursor: move;
-}
-
-.drop-target.over {
-  outline: dashed 1px #646464;
-  box-shadow: 0 0 3px 0 #0094ff;
-}
-
-.drag-item {
-  cursor: move;
-}
-
 #sidebar-wrapper {
   background: #2e3c42;
 }
@@ -86,6 +71,7 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
   height: 100%;
   z-index: 1;
   opacity: 0.05;
+  pointer-events: none;
   background-image: url('https://raw.githubusercontent.com/theodorosploumis/docker-presentation/gh-pages/img/docker_compose.png');
   background-repeat: no-repeat;
   background-position: 50% 0;
@@ -102,4 +88,51 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
   max-width: 128px;
   max-height: 128px;
   margin: 16px auto;
+}
+
+/* --- Drag and Drop  --- */
+
+*[draggable=true] {
+  -moz-user-select: none;
+  -khtml-user-drag: element;
+  cursor: move;
+}
+
+.drop-target.over {
+  outline: dashed 1px #646464;
+  box-shadow: 0 0 3px 0 #0094ff;
+}
+
+.drag-item {
+  cursor: move;
+}
+
+/* --- Tree --- */
+
+.angular-ui-tree {
+}
+
+.angular-ui-tree-handle:hover {
+}
+
+.angular-ui-tree-handle {
+  margin: 0;
+  padding: 3px 6px;
+  color: #555555;
+}
+
+.angular-ui-tree-handle:hover {
+  color: #000000;
+  background: rgba(133, 133, 133, 0.15);
+  outline: 1px solid rgba(152, 152, 152, 0.5);
+}
+
+.angular-ui-tree-placeholder {
+  margin: 0;
+  padding: 3px 6px;
+  outline: 1px dotted #d0e6ff;
+  background: #f0f9ff;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
 }
