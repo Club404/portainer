@@ -85,9 +85,9 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
 }
 
 .tree-node-icon {
-  width: 20px;
-  height: 20px;
-  line-height: 20px;
+  width: 25px;
+  height: 25px;
+  line-height: 25px;
   text-align: center;
   margin: 0;
   padding: 0;
@@ -95,8 +95,8 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
 }
 
 .tree-node-icon img {
-  max-width: 20px;
-  max-height: 20px;
+  max-width: 25px;
+  max-height: 25px;
 }
 
 .thumbnail-logo {
@@ -133,7 +133,17 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
 .angular-ui-tree {
 }
 
+.angular-ui-tree-node {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+.angular-ui-tree-node label {
+  line-height: 25px;
+  margin-bottom: 0;
+}
+
 .angular-ui-tree-node .on-focus {
+  line-height: 25px;
   opacity: 0.0;
 }
 .angular-ui-tree-node:hover .on-focus {
@@ -141,6 +151,11 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
 }
 .angular-ui-tree-node:hover .on-focus:hover {
   opacity: 1.0;
+}
+
+.angular-ui-tree-node.selected {
+  outline: 1px dotted #d0e6ff;
+  background: #f0f9ff;
 }
 
 .angular-ui-tree-handle {

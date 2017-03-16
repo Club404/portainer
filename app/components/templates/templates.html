@@ -81,7 +81,7 @@
                                  class="pull-left on-focus"
                                  ui-tree-handle>
                               <i class="text-muted fa fa-ellipsis-v"
-                                 style="width: 10px; line-height: 20px;">
+                                 style="margin: -15px; width: 10px; text-align: center">
                               </i>
                             </div>
 
@@ -92,7 +92,7 @@
                             </div>
 
                             <div ng-switch-default="">
-                              <label ng-click="selectContext('template', node.data)">
+                              <label ng-click="selectContext(node.type, node.data)">
                                 {{ node.title }}
                               </label>
                               <div class="pull-right on-focus">
@@ -106,7 +106,7 @@
                             <div ng-switch-when="docker-compose"
                                  drop-action="attachTemplate(data, node.data)"
                                  class="drop-target">
-                              <label ng-click="selectContext('template', node.data)">
+                              <label ng-click="selectContext(node.type, node.data)">
                                 {{ node.title }}
                               </label>
                               <div class="pull-right on-focus">
@@ -120,7 +120,7 @@
                             <div ng-switch-when="template"
                                  drop-action="attachTemplate(data, null, node)"
                                  class="drop-target">
-                              <label ng-click="selectContext('template', node.data)">
+                              <label ng-click="selectContext(node.type, node.data)">
                                 {{ node.title }}
                               </label>
                               <div class="pull-right on-focus">
@@ -134,15 +134,20 @@
                             <ol ui-tree-nodes=""
                                 ng-if="node.expanded"
                                 ng-model="node.nodes">
-                              <li ng-repeat="node in node.nodes" ui-tree-node ng-include="'nodes_renderer.html'">
+                              <li ng-repeat="node in node.nodes"
+                                  ng-class="{ 'selected': node.data === state.selectedTemplate }"
+                                  ng-include="'nodes_renderer.html'"
+                                  ui-tree-node>
                               </li>
                             </ol>
                           </div>
                         </script>
                         <div ui-tree>
                           <ol ui-tree-nodes="" ng-model="state.currentRecipe">
-                            <li ng-repeat="node in state.currentRecipe" ui-tree-node
-                                ng-include="'nodes_renderer.html'"></li>
+                            <li ng-repeat="node in state.currentRecipe"
+                                ng-class="{ 'selected': node.data === state.selectedTemplate }"
+                                ng-include="'nodes_renderer.html'"
+                                ui-tree-node></li>
                           </ol>
                         </div>
                       </div>

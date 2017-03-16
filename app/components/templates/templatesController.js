@@ -273,7 +273,7 @@ angular.module('templates', [])
             console.warn('todo: select docker-compose');
             break;
           case 'template':
-            $scope.selectedTemplate = context;
+            $scope.state.selectedTemplate = context;
             break;
           case 'network':
             console.warn('todo: select template');
