@@ -256,13 +256,13 @@ angular.module('templates', [])
       $scope.createContext = function (type, context, target) {
         switch (type) {
           case 'docker-compose':
-            console.warn('todo: select docker-compose');
+            console.warn('todo: create docker-compose');
             break;
           case 'template':
-            $scope.selectedTemplate = context;
+            $scope.selectContext(type, context);
             break;
           case 'network':
-            console.warn('todo: select template');
+            console.warn('todo: create template');
             break;
         }
       }
@@ -270,15 +270,13 @@ angular.module('templates', [])
       $scope.selectContext = function (type, context) {
         switch (type) {
           case 'docker-compose':
-            console.warn('todo: select docker-compose');
             break;
           case 'template':
-            $scope.state.selectedTemplate = context;
             break;
           case 'network':
-            console.warn('todo: select template');
             break;
         }
+        $scope.state.selectedTemplate = context;
       };
 
       $scope.createComposeNode = function (opts) {
@@ -303,9 +301,39 @@ angular.module('templates', [])
         return node;
       };
 
-      $scope.findComposeNode = function (node) {
+      $scope.removeTreeNode = function (target) {
+        console.info('~~>', target.type);
+        switch (target.type) {
+          case 'docker-compose':
+            $scope.removeComposeNode(target);
+            break;
+          case 'template':
+            $scope.removeTemplateNode(target);
+            break;
+        }
+      };
+
+      $scope.removeComposeNode = function (compose) {
+        var composeParent = {nodes: $scope.state.currentRecipe};
+        var composeIndex = composeParent && composeParent.nodes ? composeParent.nodes.indexOf(compose) : -1;
+        if (composeIndex > -1) {
+          composeParent.nodes.splice(composeIndex, 1);
+        }
+        $scope.selectContext(null);
+      };
+
+      $scope.removeTemplateNode = function (template) {
+        var composeTarget = $scope.findComposeNode(template);
+        var composeIndex = composeTarget && composeTarget.nodes ? composeTarget.nodes.indexOf(template) : -1;
+        if (composeIndex > -1) {
+          composeTarget.nodes.splice(composeIndex, 1);
+        }
+        $scope.selectContext('docker-compose', composeTarget);
+      };
+
+      $scope.findComposeNode = function (child) {
         var results = $scope.state.currentRecipe.filter(function (composeNode) {
-          return composeNode.nodes && composeNode.nodes.indexOf(node) >= 0;
+          return composeNode.nodes && composeNode.nodes.indexOf(child) >= 0;
         });
         return results.length ? results[0] : null;
       };

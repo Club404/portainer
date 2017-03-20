@@ -75,7 +75,8 @@
                       <div ng-if="state.currentRecipe.length">
                         <!-- Nested node template -->
                         <script type="text/ng-template" id="nodes_renderer.html">
-                          <div ng-switch="node.type">
+                          <div ng-switch="node.type"
+                               ng-class="{ 'selected': node.data === state.selectedTemplate }">
 
                             <div style="margin: 0px;"
                                  class="pull-left on-focus"
@@ -87,7 +88,8 @@
 
                             <div class="pull-left"
                                  ng-click="node.expanded = !node.expanded; selectContext('template', node.data)">
-                              <i ng-if="!node.icon" class="tree-node-icon fa" ng-class="{ 'fa-minus': node.expanded, 'fa-plus': !node.expanded }"></i>
+                              <i ng-if="!node.icon" class="tree-node-icon fa"
+                                 ng-class="{ 'fa-minus': node.expanded, 'fa-plus': !node.expanded }"></i>
                               <img ng-if="node.icon" class="tree-node-icon" ng-src="{{ node.icon }}">
                             </div>
 
@@ -111,7 +113,7 @@
                               </label>
                               <div class="pull-right on-focus">
                                 <a class="text-muted"
-                                   ng-click="">
+                                   ng-click="removeComposeNode(node)">
                                   <i class="fa fa-trash"></i>
                                 </a>
                               </div>
@@ -125,28 +127,28 @@
                               </label>
                               <div class="pull-right on-focus">
                                 <a class="text-muted"
-                                   ng-click="">
+                                   ng-click="removeTemplateNode(node)">
                                   <i class="fa fa-trash"></i>
                                 </a>
                               </div>
                             </div>
-
-                            <ol ui-tree-nodes=""
-                                ng-if="node.expanded"
-                                ng-model="node.nodes">
-                              <li ng-repeat="node in node.nodes"
-                                  ng-class="{ 'selected': node.data === state.selectedTemplate }"
-                                  ng-include="'nodes_renderer.html'"
-                                  ui-tree-node>
-                              </li>
-                            </ol>
                           </div>
+                          <ol ui-tree-nodes=""
+                              ng-model="node.nodes">
+                            <li ng-repeat="node in node.nodes"
+                                ng-include="'nodes_renderer.html'"
+                                data-expand-on-hover="1500"
+                                data-collapsed="{{ !node.expanded }}"
+                                ui-tree-node>
+                            </li>
+                          </ol>
                         </script>
                         <div ui-tree>
                           <ol ui-tree-nodes="" ng-model="state.currentRecipe">
                             <li ng-repeat="node in state.currentRecipe"
-                                ng-class="{ 'selected': node.data === state.selectedTemplate }"
                                 ng-include="'nodes_renderer.html'"
+                                data-expand-on-hover="1500"
+                                data-collapsed="{{ !node.expanded }}"
                                 ui-tree-node></li>
                           </ol>
                         </div>
@@ -289,7 +291,7 @@
                               Less options
                             </a>
                             <a class="btn btn-danger"
-                               ng-click="state.selectedTemplate = null">
+                               ng-click="removeTreeNode(state.selectedTemplate)">
                               <i class="fa fa-trash"></i>
                             </a>
                           </div>

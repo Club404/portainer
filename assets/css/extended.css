@@ -124,6 +124,13 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
 
 /* --- Tree --- */
 
+.angular-ui-tree-node[data-collapsed="true"] > ol {
+  display: none;
+}
+.angular-ui-tree-node[data-collapsed="false"] > ol {
+  display: list-item;
+}
+
 .tree-node-ico {
   max-width: 16px;
   max-height: 16px;
@@ -133,10 +140,16 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
 .angular-ui-tree {
 }
 
+.angular-ui-tree .selected {
+  outline: 1px dotted #d0e6ff;
+  background: #f0f9ff;
+}
+
 .angular-ui-tree-node {
   margin-top: 3px;
   margin-bottom: 3px;
 }
+
 .angular-ui-tree-node label {
   line-height: 25px;
   margin-bottom: 0;
@@ -146,16 +159,13 @@ ul.sidebar .sidebar-title.separator, .sidebar-footer, ul.sidebar .sidebar-list a
   line-height: 25px;
   opacity: 0.0;
 }
+
 .angular-ui-tree-node:hover .on-focus {
   opacity: 0.15;
 }
-.angular-ui-tree-node:hover .on-focus:hover {
-  opacity: 1.0;
-}
 
-.angular-ui-tree-node.selected {
-  outline: 1px dotted #d0e6ff;
-  background: #f0f9ff;
+.angular-ui-tree-node:hover .on-focus:hover, .angular-ui-tree-node .selected .on-focus {
+  opacity: 1.0;
 }
 
 .angular-ui-tree-handle {
